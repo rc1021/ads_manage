@@ -8,11 +8,12 @@ use Exception;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 
 class Material extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['title', 'type', 'extra_data'];
 
@@ -78,5 +79,14 @@ class Material extends Model
         throw new Exception('duplicate entry');
     }
 
+    /**
+     * 取得文案標籤
+     *
+     * @return void
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(MaterialTag::class, app(MaterialTagMaterial::class)->getTable());
+    }
 
 }

@@ -2,27 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\MaterialType;
-use App\Models\Material;
-use App\Repositories\MaterialRepository;
-use BenSampo\Enum\Rules\EnumValue;
+use App\Models\MaterialTag;
+use App\Repositories\MaterialTagRepository;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
-class MaterialController extends Controller
+class MaterialTagController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, MaterialRepository $rep)
+    public function index()
     {
-        $model = $rep->getIndexViewModel($request->all());
-        // if($request->ajax())
-            return response()->json($model);
-        // return view('materials.index');
     }
 
     /**
@@ -41,11 +35,11 @@ class MaterialController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, MaterialRepository $rep)
+    public function store(Request $request, MaterialTagRepository $rep)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'type' => ['required', new EnumValue(MaterialType::class, false)],
+            'name' => 'required|unique:material_tags',
+            'parent_id' => 'exists:App\Models\MaterialTag,id',
         ]);
 
         try {
@@ -56,7 +50,7 @@ class MaterialController extends Controller
             $model = $rep->create($request->all());
             if($request->ajax())
                 return response()->json($model);
-            return redirect()->route('materials.index');
+            return redirect('/');
         }
         catch(Exception $e) {
             if($request->ajax())
@@ -66,47 +60,23 @@ class MaterialController extends Controller
     }
 
     /**
-     * 上傳部份素材至暫存空間，等到全部內容下載完畢後，開始執行合併
-     *
-     * @param  mixed $request
-     * @param  mixed $rep
-     * @return void
-     */
-    public function upload(Request $request, MaterialRepository $rep)
-    {
-        Validator::make($request->all(), [
-            'data' => 'required|file',
-            'id' => 'required', // 素材檔在資料庫裡的 id
-            'name' => 'required',
-            'total' => 'required',
-            'index' => 'required',
-        ])->validate();
-
-        if ($request->file('data')->isValid())
-            $rep->save_to_temp($request->data);
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Material  $material
+     * @param  \App\Models\MaterialTag  $materialTag
      * @return \Illuminate\Http\Response
      */
-    public function show(Material $material)
+    public function show(MaterialTag $materialTag)
     {
-        $material->load('tags');
-        // if(request()->ajax())
-            return response()->json($material);
-        // return view('materials.show');
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Material  $material
+     * @param  \App\Models\MaterialTag  $materialTag
      * @return \Illuminate\Http\Response
      */
-    public function edit(Material $material)
+    public function edit(MaterialTag $materialTag)
     {
         //
     }
@@ -115,13 +85,13 @@ class MaterialController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Material  $material
+     * @param  \App\Models\MaterialTag  $materialTag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Material $material, MaterialRepository $rep)
+    public function update(Request $request, MaterialTag $materialTag)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|unique:materials,title,'.$material->id.',id',
+            'name' => 'required|unique:material_tags',
         ]);
 
         try {
@@ -129,7 +99,7 @@ class MaterialController extends Controller
                 $errors = $validator->errors();
                 throw new Exception($errors->first());
             }
-            $rep->update($material, $request->all());
+            $materialTag->update(collect($request->all())->only(['name'])->toArray());
         }
         catch(Exception $e) {
             if($request->ajax())
@@ -141,11 +111,11 @@ class MaterialController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Material  $material
+     * @param  \App\Models\MaterialTag  $materialTag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Material $material)
+    public function destroy(MaterialTag $materialTag)
     {
-        $material->delete();
+        $materialTag->delete();
     }
 }

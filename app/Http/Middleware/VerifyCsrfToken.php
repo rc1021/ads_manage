@@ -13,6 +13,8 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'materials',
-        'materials/upload',
+        'materials/*',
+        'material_tags',
+        'material_tags/*',
     ];
 }
