@@ -25,6 +25,16 @@ class MaterialTag extends Model
     }
 
     /**
+     * 取得此標籤上一層標籤
+     *
+     * @return void
+     */
+    public function parent()
+    {
+        return $this->belongsTo(MaterialTag::class, 'parent_id');
+    }
+
+    /**
      * 取得所有標籤並依 parent_id 為群組
      *
      * @return Collection
