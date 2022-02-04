@@ -4,21 +4,25 @@ namespace App\Models;
 
 use App\Enums\MaterialStatusType;
 use App\Enums\MaterialType;
+use App\Traits\MaterialThumnail;
 use Exception;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 
 class Material extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Cachable, MaterialThumnail;
 
     protected $fillable = ['title', 'type', 'extra_data'];
 
     protected $casts = [
         'extra_data' => AsArrayObject::class,
+        'created_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
@@ -77,6 +81,26 @@ class Material extends Model
             }
         } while(--$max_try_times > 0);
         throw new Exception('duplicate entry');
+    }
+
+    /**
+     * 判斷是否處理完成且可用
+     *
+     * @return void
+     */
+    public function getIsReadyAttribute()
+    {
+        return data_get($this->extra_data, 'status') != 2;
+    }
+
+    /**
+     * typeText 取得 Enum 的 key
+     *
+     * @return void
+     */
+    public function getTypeTextAttribute()
+    {
+        return MaterialType::fromValue((int)$this->attributes['type'])->key;
     }
 
     /**

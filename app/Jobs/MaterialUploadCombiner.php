@@ -61,7 +61,8 @@ class MaterialUploadCombiner implements ShouldQueue
         $extra_data['status'] = MaterialStatusType::Combin;
         // 記錄原檔路徑
         $extra_data['origin'] = array_merge(data_get($extra_data, 'origin', []), [
-            'path' => $filepath
+            'path' => $filepath,
+            'mime_type' => Storage::mimeType($filepath),
         ]);
         $model->extra_data = $extra_data;
         $model->save();
@@ -82,22 +83,11 @@ class MaterialUploadCombiner implements ShouldQueue
     public function handleForImage(Material $model)
     {
         // 建立縮圖
-        $t640 = Material::GetPublicDirectory($model->id) . '/t640.png';
         $extra_data = $model->extra_data;
-        $filepath = data_get($model->extra_data, 'origin.path', null);
-        Image::make(Storage::path($filepath))
-            ->resize(640, 640, function ($constraint) {
-                $constraint->aspectRatio();
-            })
-            ->save(Storage::path($t640));
+        $model->makeThumnail(640, 640);
+        $model->makeThumnail(75, 75);
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        // 記錄縮圖路徑
-        $extra_data['origin'] = array_merge(data_get($extra_data, 'origin', []), [
-            'thumnails' => [
-                '640' => $t640
-            ]
-        ]);
         $model->extra_data = $extra_data;
         $model->save();
     }
@@ -111,26 +101,15 @@ class MaterialUploadCombiner implements ShouldQueue
     public function handleForVideo(Material $model)
     {
         // 建立縮圖
-        $t640 = Material::GetPublicDirectory($model->id) . '/t640.png';
         $extra_data = $model->extra_data;
-        $filepath = data_get($model->extra_data, 'origin.path', null);
-        FFMpeg::open($filepath)
-            ->getFrameFromSeconds(1)
-            ->export()
-            ->save($t640);
-        Image::make(Storage::path($t640))
-            ->resize(640, 640, function ($constraint) {
-                $constraint->aspectRatio();
-            })
-            ->save(Storage::path($t640));
+        $model->makeThumnail(640, 640);
+        $model->makeThumnail(75, 75);
+        $extra_data = $model->extra_data;
+        // 記錄時長
+        $src = data_get($extra_data, 'origin.path', null);
+        $extra_data['time'] = FFMpeg::open($src)->getDurationInSeconds();
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        // 記錄縮圖路徑
-        $extra_data['origin'] = array_merge(data_get($extra_data, 'origin', []), [
-            'thumnails' => [
-                '640' => $t640
-            ]
-        ]);
         $model->extra_data = $extra_data;
         $model->save();
     }

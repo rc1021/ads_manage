@@ -52,20 +52,22 @@ class MaterialRepository
      * @param  mixed $input
      * @return void
      */
-    public function update(Material $material, array $input)
+    public function update(Material $material, array $input) : Material
     {
         $input = collect($input ?: request()->all())->only(['title', 'tags']);
-        $keys = $input->keys()->all();
+        $keys = $input->keys();
 
         // 更名
-        if(array_key_exists('title', $keys)) {
+        if($keys->contains('title')) {
             $material->update($input->only(['title'])->toArray());
         }
 
         // 更改素材標籤
-        if(array_key_exists('tags', $keys)) {
+        if($keys->contains('tags')) {
             $material->tags()->sync($input->get('tags', []));
         }
+
+        return $material;
     }
 
     /**

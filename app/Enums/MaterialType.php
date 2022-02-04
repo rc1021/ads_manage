@@ -12,8 +12,8 @@ use BenSampo\Enum\Enum;
  */
 final class MaterialType extends Enum
 {
-    const Text = 0;
-    const Image = 1;
-    const Audio = 2;
-    const Video = 3;
+    const Text  = 1 << 0;
+    const Image = 1 << 1;
+    const Audio = 1 << 2;
+    const Video = 1 << 3;
 }

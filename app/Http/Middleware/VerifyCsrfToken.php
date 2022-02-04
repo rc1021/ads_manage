@@ -16,5 +16,6 @@ class VerifyCsrfToken extends Middleware
         'materials/*',
         'material_tags',
         'material_tags/*',
+        'snowflake',
     ];
 }

@@ -97,47 +97,67 @@ FileCreator.prototype.save = function ()
 
 var files = window.files = [];
 
-document.addEventListener("change", async function(event) {
-    let input = event.target.closest('input');
-    if (!input) return ;
-    if (!document.contains(input)) return ;
-    if(input.type != 'file' || input.dataset.rel != 'part-upload') return ;
-    let form = input.closest('form');
-    if (!form) return ;
-
-    // 建立準備上傳的檔案群
-    for (var i = 0; i < input.files.length; i++) {
-        let blob = input.files.item(i),
-            file = new FileCreator(blob, input.dataset.url, input.dataset.limit);
-        // 為 blob 建立素材資料
-        await axios.post(form.action, {
-            title: file.get('name'),
-            type: input.dataset.type,
-            extra_data: {
-                origin: file.all()
+document.addEventListener("DOMContentLoaded", function (event)
+{
+    for(var item of document.querySelectorAll('[data-rel="drop-part-upload"]')) {
+        item.addEventListener("dragover", function (ev) {
+            ev.preventDefault();
+        });
+        item.addEventListener("drop", function (ev) {
+            ev.preventDefault();
+            if (ev.dataTransfer.items) {
+                // Use DataTransferItemList interface to access the file(s)
+                for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+                    // If dropped items aren't files, reject them
+                    var files = [];
+                    if (ev.dataTransfer.items[i].kind === 'file')
+                        files.push(ev.dataTransfer.items[i].getAsFile());
+                    if(files.length > 0)
+                        partUpload.call(ev.target, files);
+                }
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                if(ev.dataTransfer.files.length > 0)
+                    partUpload.call(ev.target, ev.dataTransfer.files);
             }
-        })
-        .then(function (response) {
-            // 只有素材建立成功時才有 model_id
-            if(!response.data.id) {
-                filwindow.fileses.push(new FileCreatorException('model has not created', file));
-                return ;
-            }
-            file.set('id', response.data.id);
-            file.set('name', response.data.title);
-            file.save()
-            .then(function(response) {
-                files.push(file);
-            })
-            .catch(function(error) {
-                window.files.push(new FileCreatorException(error.response.data.message, file));
-            });
-        })
-        .catch(function (error) {
-            window.files.push(new FileCreatorException(error.response.data.message, file));
         });
     }
-    // reset input file
-    input.value = '';
 });
 
+async function partUpload(files) {
+    // 建立準備上傳的檔案群
+    for (var i = 0; i < files.length; i++) {
+        let blob = files[i],
+            file = new FileCreator(blob, this.dataset.url, this.dataset.sizeLimit);
+
+        if(blob.size > this.dataset.sizeLimit)
+            window.files.push(new FileCreatorException('size(' + (blob.size / 1024 / 1024).toFixed(2) + 'MB) big then ' + (this.dataset.sizeLimit / 1024 / 1024).toFixed(2) + 'MB', file));
+        else {
+            // 為 blob 建立素材資料
+            await axios.post(this.dataset.temporaryUrl, {
+                title: file.get('name'),
+                type: this.dataset.type,
+                extra_data: {
+                    origin: file.all()
+                }
+            })
+            .then(function (response) {
+                if(!response.data) {
+                    filwindow.fileses.push(new FileCreatorException('temporary_id has not created', file));
+                    return ;
+                }
+                file.set('id', response.data);
+                file.save()
+                .then(function(response) {
+                    files.push(file);
+                })
+                .catch(function(error) {
+                    window.files.push(new FileCreatorException(error.response.data.message, file));
+                });
+            })
+            .catch(function (error) {
+                window.files.push(new FileCreatorException(error.response.data.message, file));
+            });
+        }
+    }
+}

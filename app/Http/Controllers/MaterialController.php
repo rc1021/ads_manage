@@ -129,7 +129,7 @@ class MaterialController extends Controller
                 $errors = $validator->errors();
                 throw new Exception($errors->first());
             }
-            $rep->update($material, $request->all());
+            return $rep->update($material, $request->all());
         }
         catch(Exception $e) {
             if($request->ajax())
