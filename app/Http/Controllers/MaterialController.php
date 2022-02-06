@@ -8,6 +8,7 @@ use App\Repositories\MaterialRepository;
 use BenSampo\Enum\Rules\EnumValue;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class MaterialController extends Controller
@@ -76,10 +77,17 @@ class MaterialController extends Controller
     {
         Validator::make($request->all(), [
             'data' => 'required|file',
-            'id' => 'required', // 素材檔在資料庫裡的 id
             'name' => 'required',
             'total' => 'required',
             'index' => 'required',
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    // dd(Cache::has($value), $value, Cache::get($value));
+                    if(!Cache::has($value))
+                        $fail(__('The temporary id is invalid'));
+                }
+            ], // 驗證 temporary id 是否存在
         ])->validate();
 
         if ($request->file('data')->isValid())

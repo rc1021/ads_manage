@@ -70,6 +70,8 @@
                         {{ __('Cancel') }}
                     </button>
                     </div>
+                    <div class="hidden bg-amber-200 text-amber-600 stroke-amber-600"></div>
+                    <div class="hidden bg-sky-200 text-sky-600 stroke-sky-600"></div>
                 </div>
             </div>
         </form>

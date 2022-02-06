@@ -1,3 +1,3 @@
 require('./bootstrap');
 require('./polyfill');
-require('./input-uploader');
+require('./drop-uploader');

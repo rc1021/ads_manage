@@ -9,7 +9,7 @@ use Livewire\WithFileUploads;
 
 class Item extends Component
 {
-    use WithFileUploads;
+    public $count = 4;
 
     public $tags;
 
@@ -17,13 +17,14 @@ class Item extends Component
 
     public $images = [];
 
+    public $videos = [];
+
     public $type = MaterialType::Text;
 
     public $modal = false;
 
     protected $rules = [
         'texts.*' => 'unique:materials,title',
-        'images.*' => 'image|max:512', // 1MB Max
     ];
 
     protected $messages = [
@@ -35,6 +36,26 @@ class Item extends Component
         $this->type = $type;
     }
 
+    public function addImage($temporary_id)
+    {
+        array_push($this->images, $temporary_id);
+    }
+
+    public function removeImage($temporary_id)
+    {
+        $this->images = array_values(array_filter($this->images, fn ($m) => $m != $temporary_id));
+    }
+
+    public function addVideo($temporary_id)
+    {
+        array_push($this->videos, $temporary_id);
+    }
+
+    public function removeVideo($temporary_id)
+    {
+        $this->videos = array_values(array_filter($this->videos, fn ($m) => $m != $temporary_id));
+    }
+
     public function addInput()
     {
         array_push($this->texts, null);
@@ -44,11 +65,6 @@ class Item extends Component
     {
         unset($this->texts[$key]);
         $this->texts = array_values($this->texts);
-    }
-
-    public function updatedImages ()
-    {
-        $this->validate();
     }
 
     public function update()

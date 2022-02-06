@@ -2075,7 +2075,7 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./polyfill */ "./resources/js/polyfill.js");
 
-__webpack_require__(/*! ./input-uploader */ "./resources/js/input-uploader.js");
+__webpack_require__(/*! ./drop-uploader */ "./resources/js/drop-uploader.js");
 
 /***/ }),
 
@@ -2112,69 +2112,131 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ "./resources/js/input-uploader.js":
-/*!****************************************!*\
-  !*** ./resources/js/input-uploader.js ***!
-  \****************************************/
+/***/ "./resources/js/drop-uploader.js":
+/*!***************************************!*\
+  !*** ./resources/js/drop-uploader.js ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-// 創建類型爲 UserException 的物件
-function FileCreatorException(message) {
-  var model = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  this.message = message;
-  this.name = "FileCreatorException";
-  this.model = model;
-} // 讓例外轉換成整齊的字串當它被當作字串使用時
 
 
-FileCreatorException.prototype.toString = function () {
-  return this.name + ': "' + this.message + '"';
-};
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
-function FileCreator(file, post_url) {
-  var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  if (!post_url) throw new FileCreatorException("File post url is not exists.");
-  var part_size = (limit || 2) * 1024 * 1024; // magabytes
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function FileCreator(file, dataset) {
+  var accept = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var bandwidth = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 5;
+  this._dataset = dataset;
+  this._accept = accept || '*/*';
   this._file = file;
+  this._part_size = (bandwidth || 5) * 1024 * 1024; // magabytes
+
   this._part_fails = [];
   this._data = {
-    url: post_url,
+    url: this._dataset.url,
     name: file.name,
     ext: (file.name.split('.') || []).pop(),
     size: file.size,
     stamp: Date.now(),
     succeed: 0,
-    part_count: Math.ceil(file.size / part_size),
+    part_count: Math.ceil(file.size / this._part_size),
     parts: [] // 有順序的分割內容
 
   };
-  if (this._data.name == this._data.ext) this._data.ext = null; // 將內容分割
-
-  for (var i = 0; i < this._data.part_count; ++i) {
-    //計算起始與結束位置
-    var start = i * part_size,
-        end = Math.min(this._data.size, start + part_size);
-
-    this._data.parts.push(file.slice(start, end));
-  }
+  if (this._data.name == this._data.ext) this._data.ext = null;
+  this.init();
 }
+
+FileCreator.prototype.init = function () {
+  // 建立可視化結構
+  this.visualization(); // 驗證
+
+  if (this.isValidate()) {
+    // 將內容分割
+    for (var i = 0; i < this._data.part_count; ++i) {
+      //計算起始與結束位置
+      var start = i * this._part_size,
+          end = Math.min(this._data.size, start + this._part_size);
+
+      this._data.parts.push(this._file.slice(start, end));
+    }
+  }
+}; // 取得可視化進度
+
+
+FileCreator.prototype.visualization = function () {
+  if (!this._visualization) {
+    // text
+    this._visualization_text = document.createElement("div");
+    this._visualization_text.className = 'flex justify-between mb-1'; // progress
+
+    this._visualization_progress = document.createElement("div");
+    this._visualization_progress.className = 'w-full bg-gray-100 rounded-full h-2.5 dark:bg-gray-700'; // visualization
+
+    this._visualization = document.createElement("div");
+    this._visualization.className = 'z-50 p-4 py-3 text-slate-700 bg-white/90';
+
+    this._visualization.appendChild(this._visualization_text);
+
+    this._visualization.appendChild(this._visualization_progress);
+  }
+
+  return this._visualization;
+}; // 驗證檔案
+
+
+FileCreator.prototype.isValidate = function () {
+  // 檢查 post url
+  if (!this._dataset.url) {
+    this.throwException("File post url is not exists.");
+    return false;
+  } // 檢查 type
+
+
+  if (typeof this._accept != 'string') this._accept = '*/*';
+
+  var accept = this._accept.split('/');
+
+  if (typeof accept[0] == 'undefined' || accept[0] == '*') accept[0] = '.*';
+  if (typeof accept[1] == 'undefined' || accept[1] == '*') accept[1] = '.*';
+
+  if (!this._file.type.match(accept.join('/'))) {
+    this.throwException(this.get('name') + ': type is not accepted.');
+    return false;
+  } // 檢查 size
+
+
+  if (this.get('size') > this._dataset.sizeLimit) {
+    this.throwException(this.get('name') + ': size(' + (this.get('size') / 1024 / 1024).toFixed(2) + 'MB) big then ' + (this._dataset.sizeLimit / 1024 / 1024).toFixed(2) + 'MB');
+    return false;
+  }
+
+  return true;
+};
+
+FileCreator.prototype.renew_process = function () {
+  var process = Math.floor(this.get('succeed') / this.get('part_count') * 100),
+      name = this.get('name');
+  this._visualization_text.innerHTML = '<span title="' + name + '" class="text-base truncate max-w-sm flex-1 font-medium text-gray-700 dark:text-white">' + name + '</span>' + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>';
+  this._visualization_progress.innerHTML = '<div class="bg-gray-600 h-2.5 rounded-full" style="width: ' + process + '%"></div>';
+};
+
+FileCreator.prototype.done = function () {
+  var process = Math.floor(this.get('succeed') / this.get('part_count') * 100),
+      name = this.get('name');
+  this._visualization_text.innerHTML = '<span title="' + name + '" class="text-base truncate max-w-sm flex-1 font-medium text-gray-700 dark:text-white">' + '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-sky-600 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>' + name + '</span>' + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>';
+};
 
 FileCreator.prototype.set = function (key, value) {
   return _.set(this._data, key, value);
@@ -2186,78 +2248,243 @@ FileCreator.prototype.get = function (key) {
 
 FileCreator.prototype.all = function (key) {
   return _.pick(this._data, ['url', 'name', 'ext', 'size', 'stamp']);
-}; // 重新上傳檔案
+};
+
+FileCreator.prototype.upload = function () {
+  var closure = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  var self = this;
+  self.part_upload().then(function (response) {
+    if (typeof closure == 'function') closure(self);
+  })["catch"](function (error) {
+    var message = self.get('name') + ': ' + error.response.data.message;
+    if (error.response.data.errors) for (var key in error.response.data.errors) {
+      error.response.data.errors[key].forEach(function (element) {
+        message += "\n-- " + element;
+      });
+    }
+    self.throwException(message, 'worring');
+  });
+};
+
+FileCreator.prototype.throwException = function (message) {
+  var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'error';
+  var self = this,
+      color = 'red';
+  if (type == 'worring') color = 'amber';
+  this._visualization.className = 'flex z-50 items-start p-4 py-3 text-' + color + '-600 bg-' + color + '-200 space-x-2 cursor-pointer transition-opacity ease-in-out';
+  this._visualization.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-' + color + '-600 flex-none mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg><pre class="flex-1">' + message + '</pre>';
+  this._visualization.alt = 'click to remove';
+
+  this._visualization.addEventListener("fadeoutAndRemove", function (ev) {
+    ev.target.className += ' opacity-0 duration-1000';
+    setTimeout(function () {
+      ev.target.remove();
+    }, 1 * 1000);
+  });
+
+  if (type == 'error') {
+    // 點擊移除
+    this._visualization.addEventListener("click", function (ev) {
+      ev.target.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
+    }); // 3.5 秒自動移除
 
 
-FileCreator.prototype.restart_upload = function () {
-  this._uploading_part = 0;
-  this.Error = null;
-  return this.next_upload();
+    setTimeout(function () {
+      if (self._visualization) self._visualization.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
+    }, 3.5 * 1000);
+  }
+
+  ;
+  console.error(message);
 }; // 上傳檔案
 
 
-FileCreator.prototype.save = function () {
-  var self = this,
-      count = this.get('parts').length;
-  var uploads = [];
+FileCreator.prototype.part_upload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+  var self, count, uploads, i, form;
+  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          self = this, count = this.get('parts').length;
+          uploads = [];
+          i = 0;
 
-  for (var i = 0; i < count; i++) {
-    var form = new FormData();
-    form.append("data", this.get('parts.' + i));
-    form.append("id", this.get('id')); // material model id
+        case 3:
+          if (!(i < count)) {
+            _context.next = 21;
+            break;
+          }
 
-    form.append("name", this.get('name'));
-    form.append("stamp", this.get('stamp'));
-    form.append("ext", this.get('ext'));
-    form.append("size", this.get('size'));
-    form.append("total", this.get('part_count'));
-    form.append("index", i + 1);
-    var process = axios({
-      method: "post",
-      url: this.get('url'),
-      data: form,
-      headers: {
-        "Content-Type": "multipart/form-data"
+          form = new FormData();
+          form.append("data", this.get('parts.' + i));
+          form.append("id", this.get('id')); // temporary id
+
+          form.append("name", this.get('name'));
+          form.append("stamp", this.get('stamp'));
+          form.append("ext", this.get('ext'));
+          form.append("size", this.get('size'));
+          form.append("total", this.get('part_count'));
+          form.append("index", i + 1);
+          _context.t0 = uploads;
+          _context.next = 16;
+          return axios({
+            method: "post",
+            url: this.get('url'),
+            data: form,
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }).then(function (response) {
+            // done
+            self._data.succeed += 1;
+            self.renew_process();
+
+            if (self._data.succeed == self._data.part_count) {
+              self.done();
+            }
+          });
+
+        case 16:
+          _context.t1 = _context.sent;
+
+          _context.t0.push.call(_context.t0, _context.t1);
+
+        case 18:
+          i++;
+          _context.next = 3;
+          break;
+
+        case 21:
+          return _context.abrupt("return", axios.all(uploads));
+
+        case 22:
+        case "end":
+          return _context.stop();
       }
-    }).then(function (response) {
-      // done
-      if (++self._data.succeed == self._data.part_count) {
-        console.log('done for ' + self.get('name'));
+    }
+  }, _callee, this);
+})); // 將 dom 初始化為上傳器
+
+function dropPartUpload(item) {
+  var bandwidth = 2;
+  if ((item.accept || '').match('video/.*')) bandwidth = 10;
+  item.addEventListener("dragover", function (ev) {
+    ev.preventDefault();
+  }); // 使用點擊方式上傳檔案
+
+  item.addEventListener("click", function (ev) {
+    ev.preventDefault();
+    var self = this,
+        input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = "multiple";
+
+    if (this.hasAttributes()) {
+      var attrs = this.attributes;
+
+      for (var i = attrs.length - 1; i >= 0; i--) {
+        input.setAttribute(attrs[i].name, attrs[i].value);
       }
+    }
+
+    input.addEventListener("change", function (event) {
+      event.preventDefault();
+
+      for (var i = 0; i < this.files.length; i++) {
+        self.dispatchEvent(new CustomEvent('uploadToTemporary', {
+          detail: new FileCreator(this.files.item(i), this.dataset, this.accept, bandwidth)
+        }));
+      }
+
+      this.remove();
     });
-    uploads.push(process);
-  }
+    input.click();
+  }); // 使用拖曳方式上傳檔案
 
-  return axios.all(uploads);
-};
+  item.addEventListener("drop", function (ev) {
+    ev.preventDefault();
 
-var files = window.files = [];
+    if (ev.dataTransfer.items) {
+      // Use DataTransferItemList interface to access the file(s)
+      for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+        // If dropped items aren't files, reject them
+        var files = [];
+
+        if (ev.dataTransfer.items[i].kind === 'file') {
+          this.dispatchEvent(new CustomEvent('uploadToTemporary', {
+            detail: new FileCreator(ev.dataTransfer.items[i].getAsFile(), this.dataset, this.accept, bandwidth)
+          }));
+        }
+      }
+    } else {
+      // Use DataTransfer interface to access the file(s)
+      for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+        this.dispatchEvent(new CustomEvent('uploadToTemporary', {
+          detail: new FileCreator(ev.dataTransfer.files[i], this.dataset, this.accept, bandwidth)
+        }));
+      }
+    }
+  });
+  item.addEventListener("uploadToTemporary", /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2(ev) {
+      var file;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              file = ev.detail; // 加入可視化元件
+
+              this.appendChild(file.visualization()); // 驗證通過取得暫存位置及編號
+
+              if (!file.isValidate()) {
+                _context2.next = 5;
+                break;
+              }
+
+              _context2.next = 5;
+              return axios.post(this.dataset.temporaryUrl, {
+                type: this.dataset.type,
+                extra_data: {
+                  origin: file.all()
+                }
+              }).then(function (response) {
+                // file.throwException('temporary_id has not created');
+                // 取得 id 開始上傳檔案到暫存位置
+                file.set('id', response.data.key);
+                file.upload(function (obj) {
+                  // done for uploaded
+                  this.dispatchEvent(new CustomEvent('fileUploaded', {
+                    detail: {
+                      file: obj
+                    }
+                  }));
+                }.bind(this));
+              }.bind(this))["catch"](function (error) {
+                file.throwException(error.response.data.message);
+              });
+
+            case 5:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    return function (_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }());
+}
+
 document.addEventListener("DOMContentLoaded", function (event) {
-  var _iterator = _createForOfIteratorHelper(document.querySelectorAll('[data-rel="drop-part-upload"]')),
+  var _iterator = _createForOfIteratorHelper(document.querySelectorAll('[data-rel="drop-uploader"]')),
       _step;
 
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var item = _step.value;
-      item.addEventListener("dragover", function (ev) {
-        ev.preventDefault();
-      });
-      item.addEventListener("drop", function (ev) {
-        ev.preventDefault();
-
-        if (ev.dataTransfer.items) {
-          // Use DataTransferItemList interface to access the file(s)
-          for (var i = 0; i < ev.dataTransfer.items.length; i++) {
-            // If dropped items aren't files, reject them
-            var files = [];
-            if (ev.dataTransfer.items[i].kind === 'file') files.push(ev.dataTransfer.items[i].getAsFile());
-            if (files.length > 0) partUpload.call(ev.target, files);
-          }
-        } else {
-          // Use DataTransfer interface to access the file(s)
-          if (ev.dataTransfer.files.length > 0) partUpload.call(ev.target, ev.dataTransfer.files);
-        }
-      });
+      dropPartUpload(item);
     }
   } catch (err) {
     _iterator.e(err);
@@ -2265,93 +2492,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     _iterator.f();
   }
 });
-
-function partUpload(_x) {
-  return _partUpload.apply(this, arguments);
-}
-
-function _partUpload() {
-  _partUpload = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(files) {
-    var _this = this;
-
-    var _loop, i;
-
-    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _loop = /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _loop() {
-              var blob, file;
-              return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _loop$(_context) {
-                while (1) {
-                  switch (_context.prev = _context.next) {
-                    case 0:
-                      blob = files[i], file = new FileCreator(blob, _this.dataset.url, _this.dataset.sizeLimit);
-
-                      if (!(blob.size > _this.dataset.sizeLimit)) {
-                        _context.next = 5;
-                        break;
-                      }
-
-                      window.files.push(new FileCreatorException('size(' + (blob.size / 1024 / 1024).toFixed(2) + 'MB) big then ' + (_this.dataset.sizeLimit / 1024 / 1024).toFixed(2) + 'MB', file));
-                      _context.next = 7;
-                      break;
-
-                    case 5:
-                      _context.next = 7;
-                      return axios.post(_this.dataset.temporaryUrl, {
-                        title: file.get('name'),
-                        type: _this.dataset.type,
-                        extra_data: {
-                          origin: file.all()
-                        }
-                      }).then(function (response) {
-                        if (!response.data) {
-                          filwindow.fileses.push(new FileCreatorException('temporary_id has not created', file));
-                          return;
-                        }
-
-                        file.set('id', response.data);
-                        file.save().then(function (response) {
-                          files.push(file);
-                        })["catch"](function (error) {
-                          window.files.push(new FileCreatorException(error.response.data.message, file));
-                        });
-                      })["catch"](function (error) {
-                        window.files.push(new FileCreatorException(error.response.data.message, file));
-                      });
-
-                    case 7:
-                    case "end":
-                      return _context.stop();
-                  }
-                }
-              }, _loop);
-            });
-            i = 0;
-
-          case 2:
-            if (!(i < files.length)) {
-              _context2.next = 7;
-              break;
-            }
-
-            return _context2.delegateYield(_loop(), "t0", 4);
-
-          case 4:
-            i++;
-            _context2.next = 2;
-            break;
-
-          case 7:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _partUpload.apply(this, arguments);
-}
 
 /***/ }),
 

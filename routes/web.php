@@ -27,7 +27,10 @@ Route::post('snowflake', function (Request $request) {
         $key = app('snowflake')->id();
     }
     Cache::put($key, $request->all());
-    return $key;
+    return response()->json([
+        'key' => $key,
+        'payload' => Cache::get($key),
+    ]);
 })->name('snowflake.store');
 
 Route::post('materials/upload', MaterialController::class."@upload")->name('materials.upload');

@@ -16,21 +16,22 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Cache;
 
 class MaterialUploadCombiner implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $material_id;
+    protected $temporary_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($material_id)
+    public function __construct($temporary_id)
     {
-        $this->material_id = $material_id;
+        $this->temporary_id = $temporary_id;
     }
 
     /**
@@ -40,23 +41,22 @@ class MaterialUploadCombiner implements ShouldQueue
      */
     public function handle()
     {
-        $model = Material::find($this->material_id);
-        if(!$model)
+        $extra_data = Cache::get($this->temporary_id);
+        if(!$extra_data)
             return ;
 
         // 取得暫存位置
-        $temp_files = Storage::files(Material::GetTempDirectory($model->id));
+        $temp_files = Storage::files(Material::GetTempDirectory($this->temporary_id));
         sort($temp_files);
         $first_file = array_shift($temp_files);
         // 建立並合併檔案
-        $filepath = Storage::putFile(Material::GetPublicDirectory($model->id), new File(Storage::path($first_file)));
+        $filepath = Storage::putFile(Material::GetPublicDirectory($this->temporary_id), new File(Storage::path($first_file)));
         foreach($temp_files as $file) {
             $content = file_get_contents(Storage::path($file));
             if (!file_put_contents(Storage::path($filepath), $content, FILE_APPEND)) {
                 throw new Exception(sprintf('file append failed: from "%s" append to "%s"', Storage::path($file), $filepath));
             }
         }
-        $extra_data = $model->extra_data;
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Combin;
         // 記錄原檔路徑
@@ -64,53 +64,42 @@ class MaterialUploadCombiner implements ShouldQueue
             'path' => $filepath,
             'mime_type' => Storage::mimeType($filepath),
         ]);
-        $model->extra_data = $extra_data;
-        $model->save();
+        Cache::put($this->temporary_id, $extra_data);
         // 刪除暫存檔
-        Storage::deleteDirectory(Material::GetTempDirectory($model->id));
+        Storage::deleteDirectory(Material::GetTempDirectory($this->temporary_id));
         // 後續處理
-        $done_for_method = 'handleFor'.MaterialType::fromValue((int)$model->type)->key;
+        $done_for_method = 'handleFor'.MaterialType::fromValue((int)$extra_data['type'])->key;
         if(method_exists($this, $done_for_method))
-            $this->{$done_for_method}($model);
+            $this->{$done_for_method}($extra_data, $this->temporary_id);
     }
 
     /**
      * Combin之後圖片後續處理
      *
-     * @param  mixed $model
+     * @param  mixed $extra_data
+     * @param  mixed $temporary_id
      * @return void
      */
-    public function handleForImage(Material $model)
+    public function handleForImage($extra_data, $temporary_id)
     {
-        // 建立縮圖
-        $extra_data = $model->extra_data;
-        $model->makeThumnail(640, 640);
-        $model->makeThumnail(75, 75);
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        $model->extra_data = $extra_data;
-        $model->save();
+        Cache::put($temporary_id, $extra_data);
     }
 
     /**
      * Combin之後影片後續處理
      *
-     * @param  mixed $model
+     * @param  mixed $extra_data
      * @return void
      */
-    public function handleForVideo(Material $model)
+    public function handleForVideo($extra_data, $temporary_id)
     {
-        // 建立縮圖
-        $extra_data = $model->extra_data;
-        $model->makeThumnail(640, 640);
-        $model->makeThumnail(75, 75);
-        $extra_data = $model->extra_data;
         // 記錄時長
         $src = data_get($extra_data, 'origin.path', null);
         $extra_data['time'] = FFMpeg::open($src)->getDurationInSeconds();
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        $model->extra_data = $extra_data;
-        $model->save();
+        Cache::put($temporary_id, $extra_data);
     }
 }
