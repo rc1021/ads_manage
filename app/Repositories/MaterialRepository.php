@@ -7,6 +7,7 @@ use App\Jobs\MaterialUploadCombiner;
 use App\Models\Material;
 use Exception;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class MaterialRepository
@@ -43,6 +44,25 @@ class MaterialRepository
     {
         $input = collect($input ?: request()->all())->only(['title', 'type', 'extra_data']);
         return Material::createInstance($input->toArray());
+    }
+
+    /**
+     * 新增來自暫存區的素材
+     *
+     * @param  mixed $temporary_id
+     * @return Material
+     */
+    public function createFromTemporaryID($temporary_id) : Material
+    {
+        if(!Cache::has($temporary_id))
+            throw new Exception('temporary_id not found.');
+
+        $input = Cache::get($temporary_id);
+        $input['title'] = data_get($input, 'extra_data.origin.name', $temporary_id);
+        $model = $this->create($input);
+
+        Cache::forget($temporary_id);
+        return $model;
     }
 
     /**

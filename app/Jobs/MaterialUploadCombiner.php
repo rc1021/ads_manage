@@ -41,9 +41,12 @@ class MaterialUploadCombiner implements ShouldQueue
      */
     public function handle()
     {
-        $extra_data = Cache::get($this->temporary_id);
-        if(!$extra_data)
+        $data = Cache::get($this->temporary_id);
+        if(!$data)
             return ;
+
+        // 取得額外資訊
+        $extra_data = data_get($data, 'extra_data', []);
 
         // 取得暫存位置
         $temp_files = Storage::files(Material::GetTempDirectory($this->temporary_id));
@@ -64,42 +67,47 @@ class MaterialUploadCombiner implements ShouldQueue
             'path' => $filepath,
             'mime_type' => Storage::mimeType($filepath),
         ]);
-        Cache::put($this->temporary_id, $extra_data);
+
+        $data['extra_data'] = $extra_data;
+        Cache::put($this->temporary_id, $data);
         // 刪除暫存檔
         Storage::deleteDirectory(Material::GetTempDirectory($this->temporary_id));
         // 後續處理
-        $done_for_method = 'handleFor'.MaterialType::fromValue((int)$extra_data['type'])->key;
+        $done_for_method = 'handleFor'.MaterialType::fromValue((int)data_get($data, 'type'))->key;
         if(method_exists($this, $done_for_method))
-            $this->{$done_for_method}($extra_data, $this->temporary_id);
+            $this->{$done_for_method}();
     }
 
     /**
      * Combin之後圖片後續處理
      *
-     * @param  mixed $extra_data
-     * @param  mixed $temporary_id
      * @return void
      */
-    public function handleForImage($extra_data, $temporary_id)
+    public function handleForImage()
     {
+        $data = Cache::get($this->temporary_id);
+        $extra_data = data_get($data, 'extra_data', []);
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        Cache::put($temporary_id, $extra_data);
+        $data['extra_data'] = $extra_data;
+        Cache::put($this->temporary_id, $data);
     }
 
     /**
      * Combin之後影片後續處理
      *
-     * @param  mixed $extra_data
      * @return void
      */
-    public function handleForVideo($extra_data, $temporary_id)
+    public function handleForVideo()
     {
+        $data = Cache::get($this->temporary_id);
+        $extra_data = data_get($data, 'extra_data', []);
         // 記錄時長
-        $src = data_get($extra_data, 'origin.path', null);
+        $src = data_get($data, 'extra_data.origin.path', null);
         $extra_data['time'] = FFMpeg::open($src)->getDurationInSeconds();
         // 更新狀態
         $extra_data['status'] = MaterialStatusType::Done;
-        Cache::put($temporary_id, $extra_data);
+        $data['extra_data'] = $extra_data;
+        Cache::put($this->temporary_id, $data);
     }
 }

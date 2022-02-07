@@ -18,5 +18,10 @@
             // 將 temporary id 將入 images
             @this.addImage(event.detail.file.get('id'));
         });
+        @this.on('refreshAll', () => {
+            if(@this.images.length == 0) {
+                document.getElementById('drop_zone_images').innerHTML = '';
+            }
+        });
     })
 </script>

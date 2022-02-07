@@ -18,5 +18,10 @@
             // 將 temporary id 將入 videos
             @this.addVideo(event.detail.file.get('id'));
         });
+        @this.on('refreshAll', () => {
+            if(@this.videos.length == 0) {
+                document.getElementById('drop_zone_videos').innerHTML = '';
+            }
+        });
     })
 </script>

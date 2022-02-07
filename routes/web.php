@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('materials.index');
 });
 
 Route::post('snowflake', function (Request $request) {

@@ -60,9 +60,7 @@ class Material extends Model
         // 取得素材類型
         $type = (int)data_get($data, 'type', MaterialType::Text);
         // 設定狀態
-        $data['extra_data'] = array_merge(data_get($data, 'extra_data', []), [
-            'status' => MaterialType::fromValue($type)->is(MaterialType::Text) ? MaterialStatusType::Done : MaterialStatusType::NotYet
-        ]);
+        $data['extra_data']['status'] = MaterialType::fromValue($type)->is(MaterialType::Text) ? MaterialStatusType::Done : data_get($data, 'extra_data.status', MaterialStatusType::NotYet);
         // 重新命名最大次數
         $max_try_times = 10;
         do {
@@ -73,6 +71,7 @@ class Material extends Model
                 $errorCode = $e->errorInfo[1];
                 if($errorCode != 1062)
                     throw $e;
+                sleep(1);
                 // continue, if duplicate entry problem
                 $data['title'] = sprintf('[%s]%s', date('Y-m-d H:i:s'), $title);
                 // -- or --
@@ -106,7 +105,7 @@ class Material extends Model
     /**
      * 取得文案標籤
      *
-     * @return void
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tags()
     {

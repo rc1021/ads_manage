@@ -13,7 +13,12 @@
             {{ __('All Materials') }}
         </h2>
         @foreach ($parents as $parent)
-            <h2 wire:key="tag-{{ $parent->id }}" class="text-base font-semibold text-slate-900 dark:text-slate-200">{{ $parent->name }}</h2>
+            <h2 wire:key="tag-{{ $parent->id }}" class="text-base font-semibold text-slate-900 dark:text-slate-200">
+                {{ $parent->name }}
+                @if ($parent->materials_count > 0)
+                <span class="text-xs rounded-full px-2 py-1 bg-slate-100 font-semibold text-slate-700">{{ $parent->materials_count }}</span>
+                @endif
+            </h2>
             @if($items->get($parent->id))
             <ul role="list" class="mt-3 list-disc pl-5 space-y-3 text-slate-600">
                 @foreach ($items->get($parent->id) as $item)
@@ -35,5 +40,14 @@
             </svg>
             {{ __('Material Trash') }}
         </h2>
+    </div>
+    <hr>
+    <div class="bg-white px-4 space-y-3">
+        <a href="#" class="items-center text-base font-semibold hover:text-sky-400 text-slate-900 dark:text-slate-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+            </svg>
+            <span>廣告樣版管理</span>
+        </a>
     </div>
 </div>

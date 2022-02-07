@@ -20,10 +20,7 @@ class MaterialController extends Controller
      */
     public function index(Request $request, MaterialRepository $rep)
     {
-        $model = $rep->getIndexViewModel($request->all());
-        // if($request->ajax())
-            return response()->json($model);
-        // return view('materials.index');
+        return view('materials.index');
     }
 
     /**

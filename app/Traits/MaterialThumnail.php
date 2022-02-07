@@ -33,6 +33,16 @@ trait MaterialThumnail
     }
 
     /**
+     * 是否有縮圖
+     *
+     * @return void
+     */
+    public function hasThumnail()
+    {
+        return (data_get($this->extra_data, 'origin.path', false) !== false);
+    }
+
+    /**
      * 取得縮圖路徑
      *
      * @param  mixed $width
@@ -42,6 +52,9 @@ trait MaterialThumnail
     public function getThumnailUrl(int $width = 640, int $height = null)
     {
         if(data_get($this->extra_data, 'status') != 2)
+            return null;
+
+        if(!data_get($this->extra_data, 'origin.path', null))
             return null;
 
         // 縮圖主鍵
@@ -74,10 +87,16 @@ trait MaterialThumnail
             // 縮圖主鍵
             $key = $this->getThumnailKey($width, $height);
             $extra_data = $this->extra_data;
-            $target = sprintf("%s/%s_%s.png", Material::GetPublicDirectory($this->id), $width, $height ?: $width);
+            $directory = Material::GetPublicDirectory($this->id);
+            $target = sprintf("%s/%s_%s.png", $directory, $width, $height ?: $width);
+
+            Storage::makeDirectory($directory);
+            if (Storage::exists($target)) {
+                Storage::delete($target);
+            }
 
             $src = data_get($extra_data, 'origin.path', null);
-            if(MaterialType::fromValue((int)$this->type)->is(MaterialType::Video())) {
+            if(MaterialType::fromValue((int)$this->type)->is(MaterialType::Video)) {
                 FFMpeg::open($src)->getFrameFromSeconds(1)->export()->save($target);
                 $src = $target;
             }
@@ -91,6 +110,9 @@ trait MaterialThumnail
                 ->save(Storage::path($target));
 
             // to public
+            if (Storage::exists('public/'.$target)) {
+                Storage::delete('public/'.$target);
+            }
             Storage::copy($target, 'public/'.$target);
 
             // 記錄縮圖路徑

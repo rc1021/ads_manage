@@ -3,7 +3,8 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+  ],
   purge: [
     './storage/framework/views/*.php',
     './resources/**/*.blade.php',

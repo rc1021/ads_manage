@@ -6,7 +6,7 @@
             <div>
                 <div class="flex border-b">
                     <div class="flex flex-col flex-1">
-                        <input type="text" id="text_{{$key}}" wire:model="texts.{{$key}}" class="w-full border-0 focus:outline-none p-2 pb-1 sm:text-sm border-gray-300 rounded-md" placeholder="{{ __('Copy '.($key+1)) }}" autocomplete="off">
+                        <input type="text" id="text_{{$key}}" wire:model="texts.{{$key}}" class="w-full border-0 focus:outline-none p-2 sm:text-sm border-gray-300 rounded-md" placeholder="{{ __('Copy '.($key+1)) }}" autocomplete="off">
                     </div>
                     <div wire:click="removeInput({{$key}})" class="flex-none flex items-center justify-end bg-white text-sm cursor-pointer mx-2">
                         <svg class="h-4 w-4 stroke-red-500 hover:stroke-red-700" fill="none" viewBox="0 0 24 24">

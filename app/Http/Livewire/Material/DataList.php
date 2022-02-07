@@ -45,11 +45,13 @@ class DataList extends Component
     {
         $this->resetPage();
         $this->type = $type;
+        $this->emitTo('material.form.edit', 'edit', null);
     }
 
     public function changeDisplay($display)
     {
         $this->display = $display;
+        $this->emitTo('material.form.edit', 'edit', null);
     }
 
     public function dataSort($col)
