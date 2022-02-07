@@ -29,10 +29,11 @@ class Item extends Component
     protected $listeners = ['refreshAll' => '$refresh'];
 
     protected $rules = [
-        'texts.*' => 'unique:materials,title',
+        'texts.*' => 'required|unique:materials,title',
     ];
 
     protected $messages = [
+        'texts.*.required' => 'This field field is required.',
         'texts.*.unique' => 'This field has already been taken.',
     ];
 
