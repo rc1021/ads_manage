@@ -23,7 +23,8 @@ RUN chown -R www-data: /var/www/html
 
 COPY docker/8.1-fpm-alpine/startup.sh /usr/local/bin/startup.sh
 COPY docker/8.1-fpm-alpine/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN chmod +x /usr/local/bin/startup.sh
 
 EXPOSE 80
 
-CMD ["sh", "/usr/local/bin/startup.sh"]
+ENTRYPOINT ["sh", "/usr/local/bin/startup.sh"]
