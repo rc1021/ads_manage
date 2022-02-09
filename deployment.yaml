@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ads-manage-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: ads-manage-app
+        image: asia-east1-docker.pkg.dev/inductive-seer-340608/gke/ads-manage-app:latest
+        env:
+        - name: DB_CONNECTION
+          value: "mysql"
+        - name: DB_HOST
+          value: "10.116.0.31"
+        - name: DB_DATABASE
+          value: "ads_manage"
+        - name: DB_USERNAME
+          value: "ads_manage"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: CACHE_DRIVER
+          value: "file"
+        - name: QUEUE_CONNECTION
+          value: "sync"
+        - name: SESSION_DRIVER
+          value: "file"
+        ports:
+        - containerPort: 80
