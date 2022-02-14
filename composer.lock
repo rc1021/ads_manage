@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed2a099910c93d831054aa723ff5c69b",
+    "content-hash": "ffe65c2c9451bf67b6eb0e4836f29a97",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -3057,6 +3057,57 @@
                 }
             ],
             "time": "2021-12-04T23:24:31+00:00"
+        },
+        {
+            "name": "podlove/webvtt-parser",
+            "version": "v1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/podlove/webvtt-parser.git",
+                "reference": "540fdabf70b65c47d8d415bdf86dd8d77d78a25c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/podlove/webvtt-parser/zipball/540fdabf70b65c47d8d415bdf86dd8d77d78a25c",
+                "reference": "540fdabf70b65c47d8d415bdf86dd8d77d78a25c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7.*.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Podlove\\Webvtt\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eric Teubert",
+                    "email": "eric@ericteubert.de",
+                    "homepage": "https://ericteubert.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP library to parse webvtt",
+            "homepage": "https://github.com/podlove/webvtt-parser",
+            "keywords": [
+                "parser",
+                "podlove",
+                "webvtt"
+            ],
+            "support": {
+                "issues": "https://github.com/podlove/webvtt-parser/issues",
+                "source": "https://github.com/podlove/webvtt-parser/tree/v1.1.5"
+            },
+            "time": "2021-04-07T19:56:44+00:00"
         },
         {
             "name": "predis/predis",
@@ -9401,5 +9452,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.2.0"
 }

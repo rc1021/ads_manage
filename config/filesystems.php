@@ -42,6 +42,32 @@ return [
             'visibility' => 'public',
         ],
 
+        'downloadable_videos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/downloadable/videos'),
+            'url' => env('APP_URL').'/download_videos',
+            'visibility' => 'public',
+        ],
+
+        'streamable_videos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/streamable/videos'),
+            'url' => env('APP_URL').'/streamable_videos',
+            'visibility' => 'public',
+        ],
+
+        'thumnail_videos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/thumnail/videos'),
+            'url' => env('APP_URL').'/thumnail_videos',
+            'visibility' => 'public',
+        ],
+
+        'secret' => [
+            'driver' => 'local',
+            'root' => storage_path('app/secret'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -68,6 +94,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('streamable_videos') => storage_path('app/streamable/videos'),
+        public_path('download_videos') => storage_path('app/downloadable/videos'),
+        public_path('thumnail_videos') => storage_path('app/thumnail/videos'),
     ],
 
 ];

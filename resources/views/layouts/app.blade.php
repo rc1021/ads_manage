@@ -13,7 +13,7 @@
         <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
     </head>
     <body class="antialiased">
-        <div class="container">
+        <div class="container mx-auto">
             @yield('content')
         </div>
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
