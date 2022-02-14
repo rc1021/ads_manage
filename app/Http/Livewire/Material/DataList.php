@@ -24,9 +24,11 @@ class DataList extends Component
 
     public $type = MaterialType::Text;
 
-    public $display = 0; // 0: table, 1: grid
-
-    protected $display_views = ['table', 'grid'];
+    protected $display_views = [
+        MaterialType::Text => 'text',
+        MaterialType::Image => 'grid',
+        MaterialType::Video => 'grid',
+    ];
 
     protected $listeners = ['changeType', 'changeDisplay', 'choiceTag', 'dataSort', 'dataReload' => '$refresh'];
 
@@ -109,7 +111,7 @@ class DataList extends Component
         if($this->sortby_col) {
             $items->orderBy($this->sortby_col, ($this->orderby) ? 'desc' : 'asc');
         }
-        return view('livewire.material.data-list.'.$this->display_views[$this->display], [
+        return view('livewire.material.data-list.'.$this->display_views[$this->type], [
             'items' => $items->paginate(50),
         ]);
     }
