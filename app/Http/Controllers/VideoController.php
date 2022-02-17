@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVideoRequest;
+use App\Models\Material;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -32,7 +33,7 @@ class VideoController extends Controller
             'disk'          => config('filesystems.default'),
             'original_name' => $request->video->getClientOriginalName(),
             'extension'     => $request->video->extension(),
-            'path'          => $request->video->store('videos', config('filesystems.default')),
+            'path'          => $request->video->store(Material::DirectoryVideo, config('filesystems.default')),
             'title'         => str_replace('.'.$request->video->extension(), '', $request->video->getClientOriginalName()),
             'size'         => $request->video->getSize(),
         ]);
@@ -57,19 +58,24 @@ class VideoController extends Controller
         return redirect()->route('videos.index');
     }
 
-    public function playlist($id, $filename)
+    public function playlist($pathinfo)
     {
+        $arr = explode('/', $pathinfo);
+        array_pop($arr);
+
         return FFMpeg::dynamicHLSPlaylist()
-            ->fromDisk(Video::DiskStream)
-            ->open("$id/$filename")
+            ->fromDisk(config('filesystems.default'))
+            ->open($pathinfo)
             ->setKeyUrlResolver(function ($key) {
                 return route('videos.secret', ['key' => $key]);
             })
-            ->setMediaUrlResolver(function ($mediaFilename) use ($id) {
-                return Storage::disk(Video::DiskStream)->url("$id/$mediaFilename");
+            ->setMediaUrlResolver(function ($mediaFilename) use ($arr) {
+                array_push($arr, $mediaFilename);
+                return Storage::disk('public')->url(implode('/', $arr));
             })
-            ->setPlaylistUrlResolver(function ($playlistFilename) use ($id) {
-                return route('videos.playlist', ['id' => $id, 'filename' => $playlistFilename]);
+            ->setPlaylistUrlResolver(function ($playlistFilename) use ($arr) {
+                array_push($arr, $playlistFilename);
+                return route('videos.playlist', ['pathinfo' => implode('/', $arr)]);
             });
     }
 }

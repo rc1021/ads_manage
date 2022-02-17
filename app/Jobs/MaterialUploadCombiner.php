@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\MaterialStatusType;
 use App\Enums\MaterialType;
+use App\Enums\TemporaryStatusType;
 use App\Models\Material;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -22,6 +23,7 @@ class MaterialUploadCombiner implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 3;
     protected $temporary_id;
 
     /**
@@ -46,51 +48,33 @@ class MaterialUploadCombiner implements ShouldQueue
             return ;
 
         // 取得額外資訊
-        $extra_data = data_get($data, 'extra_data', []);
+        $metadata = data_get($data, 'metadata', []);
 
         // 取得暫存位置
-        $temp_files = Storage::files(Material::GetTempDirectory($this->temporary_id));
+        $storage = Storage::disk(config('filesystems.default'));
+        $temp_files = $storage->files(Material::DirectoryTemporary . $this->temporary_id);
         sort($temp_files);
-        $first_file = array_shift($temp_files);
+        $first_part = array_shift($temp_files);
         // 建立並合併檔案
-        $filepath = Storage::putFile(Material::GetPublicDirectory($this->temporary_id), new File(Storage::path($first_file)));
+        $filepath = $storage->putFile(Material::DirectoryTemporary . $this->temporary_id, new File($storage->path($first_part)));
         foreach($temp_files as $file) {
-            $content = file_get_contents(Storage::path($file));
-            if (!file_put_contents(Storage::path($filepath), $content, FILE_APPEND)) {
-                throw new Exception(sprintf('file append failed: from "%s" append to "%s"', Storage::path($file), $filepath));
+            $content = file_get_contents($storage->path($file));
+            if (!file_put_contents($storage->path($filepath), $content, FILE_APPEND)) {
+                throw new Exception(sprintf('file append failed: from "%s" append to "%s"', $storage->path($file), $filepath));
             }
         }
         // 更新狀態
-        $extra_data['status'] = MaterialStatusType::Combin;
+        $metadata['status'] = "".TemporaryStatusType::Combin;
         // 記錄原檔路徑
-        $extra_data['origin'] = array_merge(data_get($extra_data, 'origin', []), [
-            'path' => $filepath,
-            'mime_type' => Storage::mimeType($filepath),
-        ]);
-
-        $data['extra_data'] = $extra_data;
+        $metadata['path'] = $filepath;
+        $metadata['mime_type'] = Storage::mimeType($filepath);
+        $data['metadata'] = $metadata;
         Cache::put($this->temporary_id, $data);
-        // 刪除暫存檔
-        Storage::deleteDirectory(Material::GetTempDirectory($this->temporary_id));
-        // 後續處理
-        $done_for_method = 'handleFor'.MaterialType::fromValue((int)data_get($data, 'type'))->key;
+
+        // 建立 model for material, and image(or video etc...)
+        $done_for_method = 'handleForType'.MaterialType::getKey(data_get($data, 'type'));
         if(method_exists($this, $done_for_method))
             $this->{$done_for_method}();
-    }
-
-    /**
-     * Combin之後圖片後續處理
-     *
-     * @return void
-     */
-    public function handleForImage()
-    {
-        $data = Cache::get($this->temporary_id);
-        $extra_data = data_get($data, 'extra_data', []);
-        // 更新狀態
-        $extra_data['status'] = MaterialStatusType::Done;
-        $data['extra_data'] = $extra_data;
-        Cache::put($this->temporary_id, $data);
     }
 
     /**
@@ -98,16 +82,14 @@ class MaterialUploadCombiner implements ShouldQueue
      *
      * @return void
      */
-    public function handleForVideo()
+    public function handleForTypeVideo()
     {
         $data = Cache::get($this->temporary_id);
-        $extra_data = data_get($data, 'extra_data', []);
+        $metadata = data_get($data, 'metadata', []);
         // 記錄時長
-        $src = data_get($data, 'extra_data.origin.path', null);
-        $extra_data['time'] = FFMpeg::open($src)->getDurationInSeconds();
-        // 更新狀態
-        $extra_data['status'] = MaterialStatusType::Done;
-        $data['extra_data'] = $extra_data;
+        $src = data_get($data, 'metadata.path', null);
+        $metadata['time'] = FFMpeg::open($src)->getDurationInSeconds();
+        $data['metadata'] = $metadata;
         Cache::put($this->temporary_id, $data);
     }
 }

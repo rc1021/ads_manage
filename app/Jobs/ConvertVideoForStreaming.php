@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Material;
 use App\Models\Video;
 use Carbon\Carbon;
 use FFMpeg\Format\Video\X264;
@@ -38,32 +39,32 @@ class ConvertVideoForStreaming implements ShouldQueue
         $midBitrate = (new X264)->setKiloBitrate(500);
         $highBitrate = (new X264)->setKiloBitrate(1000);
 
-        FFMpeg::fromDisk(Video::DiskDownload)
+        FFMpeg::fromDisk($this->video->disk)
             ->open($this->video->video_pad_path)
             ->exportForHLS()
             ->withRotatingEncryptionKey(function ($filename, $contents) {
-                Storage::disk(Video::DiskSecret)->put($filename, $contents);
+                Storage::disk($this->video->disk)->put($this->video->secret_path . $filename, $contents);
             })
             ->setSegmentLength(10) // optional
             ->setKeyFrameInterval(48) // optional
             ->addFormat($lowBitrate)
             ->addFormat($midBitrate)
             ->addFormat($highBitrate)
-            ->toDisk(Video::DiskStream)
+            ->toDisk($this->video->disk)
             ->save($this->video->m3u8_pad_path);
 
-        FFMpeg::fromDisk(Video::DiskDownload)
+        FFMpeg::fromDisk($this->video->disk)
             ->open($this->video->video_gblur_path)
             ->exportForHLS()
             ->withRotatingEncryptionKey(function ($filename, $contents) {
-                Storage::disk(Video::DiskSecret)->put($filename, $contents);
+                Storage::disk($this->video->disk)->put($this->video->secret_path . $filename, $contents);
             })
             ->setSegmentLength(10) // optional
             ->setKeyFrameInterval(48) // optional
             ->addFormat($lowBitrate)
             ->addFormat($midBitrate)
             ->addFormat($highBitrate)
-            ->toDisk(Video::DiskStream)
+            ->toDisk($this->video->disk)
             ->save($this->video->m3u8_gblur_path);
 
         $this->video->update([

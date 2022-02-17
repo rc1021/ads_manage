@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\MaterialStatusType;
 use App\Enums\MaterialType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,13 +16,15 @@ class CreateMaterialsTable extends Migration
     public function up()
     {
         Schema::create('materials', function (Blueprint $table) {
-            $table->id();
-            $table->enum('type', MaterialType::getValues())->default(MaterialType::Text);
+            $table->bigIncrements('id');
+            $table->enum('type', MaterialType::getValues());
+            $table->enum('status_type', MaterialStatusType::getValues());
             $table->longText('title')->unique();
             $table->bigInteger('user_id')->default(0);
             $table->timestamps();
             $table->softDeletes();
-            $table->json('extra_data')->nullable();
+            $table->bigInteger('mediaable_id')->nullable();
+            $table->string('mediaable_type')->nullable();
 
             $table->index('type');
         });

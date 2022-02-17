@@ -39,7 +39,6 @@ class ConvertVideoForThumbing implements ShouldQueue
     public function handle()
     {
         $interval = 5;
-        $disk = Video::DiskThumnail;
         $opener = FFMpeg::fromDisk($this->video->disk)->open($this->video->path);
         $time = $opener->getDurationInSeconds();
         $dimensions = $opener->getVideoStream()->getDimensions();
@@ -72,9 +71,9 @@ class ConvertVideoForThumbing implements ShouldQueue
                     ->grid($cols, $rows)
                     ->generateVTT($this->video->thumbnail_vtt_path);
             })
-            ->toDisk($disk)
+            ->toDisk($this->video->disk)
             ->save($this->video->thumbnail_tile_path);
-        Storage::disk($disk)->append($this->video->thumbnail_vtt_path, "\n");
+        Storage::disk($this->video->disk)->append($this->video->thumbnail_vtt_path, "\n");
 
         // 建立動畫
         $media = $opener->getDriver()->get(); // ProtoneMedia\LaravelFFMpeg\FFMpeg\VideoMedia
@@ -83,17 +82,17 @@ class ConvertVideoForThumbing implements ShouldQueue
                 TimeCode::fromSeconds(0),
                 new Dimension($width, $height),
                 ($time >= 5) ? 5 : $time
-            )->save(Storage::disk($disk)->path($this->video->thumbnail_gif_path));
+            )->save(Storage::disk($this->video->disk)->path($this->video->thumbnail_gif_path));
         }
 
         // 建立快照
         $opener
             ->getFrameFromSeconds(($time > 0) ? 1 : 0)
             ->export()
-            ->toDisk($disk)
+            ->toDisk($this->video->disk)
             ->save($this->video->thumbnail_path);
 
-        $path = Storage::disk($disk)->path($this->video->thumbnail_path);
+        $path = Storage::disk($this->video->disk)->path($this->video->thumbnail_path);
         $img = Image::make($path);
         $img->resize(320, 320, function ($constraint) {
             $constraint->aspectRatio();

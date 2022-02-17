@@ -2,15 +2,13 @@
 
 namespace App\Enums;
 
-use BenSampo\Enum\Enum;
-
 /**
  * @method static static Text()
  * @method static static Image()
  * @method static static Audio()
  * @method static static Video()
  */
-final class MaterialType extends Enum
+final class MaterialType extends BaseEnum
 {
     const Text  = 1 << 0;
     const Image = 1 << 1;

@@ -94,7 +94,8 @@ FileCreator.prototype.done = function () {
     let process = Math.floor(this.get('succeed') / this.get('part_count') * 100),
         name = this.get('name');
     this._visualization_text.innerHTML = '<span title="' + name + '" class="text-base truncate max-w-sm flex-1 font-medium text-gray-700 dark:text-white">' + '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-sky-600 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>' + name + '</span>'
-        + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>';
+        + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>'
+        + '<input type="hidden" name="temporaries[]" value="' + this.get('id') + '">';
 };
 
 FileCreator.prototype.set = function (key, value) {
@@ -167,12 +168,12 @@ FileCreator.prototype.part_upload = async function ()
         var form = new FormData();
         form.append("data", this.get('parts.' + i));
         form.append("id", this.get('id')); // temporary id
+        form.append("total", this.get('part_count'));
+        form.append("index", i + 1);
         form.append("name", this.get('name'));
         form.append("stamp", this.get('stamp'));
         form.append("ext", this.get('ext'));
         form.append("size", this.get('size'));
-        form.append("total", this.get('part_count'));
-        form.append("index", i + 1);
 
         uploads.push(await axios({
             method: "post",
@@ -253,13 +254,12 @@ function dropPartUpload(item)
         this.appendChild(file.visualization());
         // 驗證通過取得暫存位置及編號
         if(file.isValidate()) {
-            // 取得 temporary 空間並上傳檔案
+            // 取得 temporary 空間
             await axios.post(this.dataset.temporaryUrl, {
                 type: this.dataset.type,
-                extra_data: {
-                    origin: file.all()
-                }
+                metadata: file.all()
             })
+            // 然後上傳檔案
             .then(function (response) {
                 // file.throwException('temporary_id has not created');
                 // 取得 id 開始上傳檔案到暫存位置

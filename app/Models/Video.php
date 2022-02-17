@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\ConvertVideoForDownloading;
 use App\Jobs\ConvertVideoForStreaming;
 use App\Jobs\ConvertVideoForThumbing;
+use App\Traits\HasMediaType;
 use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,14 +16,10 @@ use Throwable;
 
 class Video extends Model
 {
-    use HasFactory, Cachable;
-
-    const DiskSecret = 'secret';
-    const DiskStream = 'streamable_videos';
-    const DiskDownload = 'downloadable_videos';
-    const DiskThumnail = 'thumnail_videos';
+    use HasFactory, Cachable, HasMediaType;
 
     protected $dates = [
+        'converted_for_thumbing_at',
         'converted_for_downloading_at',
         'converted_for_streaming_at',
     ];
@@ -36,26 +33,32 @@ class Video extends Model
             && !is_null($this->attributes['converted_for_streaming_at']);
     }
 
-    public function getThumbnailPathAttribute() { return $this->attributes['id'] . '/thumbnail.png'; }
-    public function getThumbnailGifPathAttribute() { return $this->attributes['id'] . '/thumbnails.gif'; }
-    public function getThumbnailVttPathAttribute() { return $this->attributes['id'] . '/thumbnails.vtt'; }
-    public function getThumbnailTilePathAttribute() { return $this->attributes['id'] . '/thumb_%05d.jpg'; }
-    public function getVideoPadPathAttribute() { return $this->attributes['id'] . '/pad.' . $this->attributes['extension']; }
-    public function getM3u8PadPathAttribute() { return $this->attributes['id'] . '/pad.m3u8'; }
-    public function getVideoGblurPathAttribute() { return $this->attributes['id'] . '/gblur.' . $this->attributes['extension']; }
-    public function getM3u8GblurPathAttribute() { return $this->attributes['id'] . '/gblur.m3u8'; }
+    public function getThumbnailPathAttribute() { return Material::DirectoryThumnail . $this->attributes['id'] . '/thumbnail.png'; }
+    public function getThumbnailGifPathAttribute() { return Material::DirectoryThumnail . $this->attributes['id'] . '/thumbnails.gif'; }
+    public function getThumbnailVttPathAttribute() { return Material::DirectoryThumnail . $this->attributes['id'] . '/thumbnails.vtt'; }
+    public function getThumbnailTilePathAttribute() { return Material::DirectoryThumnail . $this->attributes['id'] . '/thumb_%05d.jpg'; }
+    public function getVideoPadPathAttribute() { return Material::DirectoryDownload . $this->attributes['id'] . '/pad.' . $this->attributes['extension']; }
+    public function getM3u8PadPathAttribute() { return Material::DirectoryStreamable . $this->attributes['id'] . '/pad.m3u8'; }
+    public function getVideoGblurPathAttribute() { return Material::DirectoryDownload . $this->attributes['id'] . '/gblur.' . $this->attributes['extension']; }
+    public function getM3u8GblurPathAttribute() { return Material::DirectoryStreamable . $this->attributes['id'] . '/gblur.m3u8'; }
+    public function getSecretPathAttribute() { return Material::DirectorySecret; }
 
-    public function getThumbnailUrlAttribute() { return Storage::disk(self::DiskThumnail)->url($this->thumbnail_path); }
-    public function getThumbnailGifUrlAttribute() { return Storage::disk(self::DiskThumnail)->url($this->thumbnail_gif_path); }
-    // public function getThumbnailVttUrlAttribute() { return Storage::disk(self::DiskThumnail)->url($this->thumbnail_vtt_Path); }
-    public function getVideoPadUrlAttribute() { return Storage::disk(self::DiskDownload)->url($this->video_pad_path); }
-    public function getM3u8PadUrlAttribute() { return Storage::disk(self::DiskStream)->url($this->m3u8_pad_path); }
-    public function getVideoGblurUrlAttribute() { return Storage::disk(self::DiskDownload)->url($this->video_gblur_path); }
-    public function getM3u8GblurUrlAttribute() { return Storage::disk(self::DiskStream)->url($this->m3u8_gblur_path); }
+    public function getThumbnailUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_path); }
+    public function getThumbnailGifUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_gif_path); }
+    // public function getThumbnailVttUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_vtt_Path); }
+    public function getVideoPadUrlAttribute() { return Storage::disk('public')->url($this->video_pad_path); }
+    public function getM3u8PadUrlAttribute() { return Storage::disk('public')->url($this->m3u8_pad_path); }
+    public function getVideoGblurUrlAttribute() { return Storage::disk('public')->url($this->video_gblur_path); }
+    public function getM3u8GblurUrlAttribute() { return Storage::disk('public')->url($this->m3u8_gblur_path); }
     public function getThumbnailVttParseAttribute() : array
     {
         $parser = new \Podlove\Webvtt\Parser;
         return $parser->parse(Storage::disk('thumnail_videos')->get($this->attributes['id'].'/thumbnails.vtt'));
+    }
+
+    public function material()
+    {
+        return $this->morphOne(Material::class, 'mediaable');
     }
 
     /**

@@ -39,7 +39,7 @@ class MaterialTagController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:material_tags',
-            'parent_id' => 'exists:App\Models\MaterialTag,id',
+            // 'parent_id' => 'exists:App\Models\MaterialTag,id',
         ]);
 
         try {
@@ -50,7 +50,7 @@ class MaterialTagController extends Controller
             $model = $rep->create($request->all());
             if($request->ajax())
                 return response()->json($model);
-            return redirect('/');
+            return back();
         }
         catch(Exception $e) {
             if($request->ajax())

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\MaterialType;
 use App\Models\Material;
+use App\Models\MaterialTag;
 use App\Repositories\MaterialRepository;
 use BenSampo\Enum\Rules\EnumValue;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Builder;
 
 class MaterialController extends Controller
 {
@@ -18,9 +20,30 @@ class MaterialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, MaterialRepository $rep)
+    public function index(Request $request)
     {
-        return view('materials.index');
+        $type = $request->input('type', MaterialType::Text);
+        // level 0 tags
+        $tag_parents = MaterialTag::where('parent_id', 0)->withCount('materials')->get();
+        // level 1 tags
+        $tags = MaterialTag::where('parent_id', '>', 0)->withCount('materials')->get()->groupBy('parent_id');
+        // choice tag
+        $tag = MaterialTag::find($request->input('tid'));
+        // the level 1 array of tag name
+        $tag_names = MaterialTag::where('id', '>', 1)->pluck('name')->toJson();
+        // relation items of the choice tag
+        $items = Material::done()->with('tags', 'mediaable')->withCount('tags')->where('type', ''.$type);
+        if ($request->input('tid') < 0)
+            $items->onlyTrashed();
+        else if($tag && $tag->id > 0)
+            $items->whereHas('tags', function (Builder $query) use ($tag) {
+                $query->where('id', $tag->id);
+            });
+        $items = $items->paginate(50);
+        // if($this->sortby_col) {
+        //     $items->orderBy($this->sortby_col, ($this->orderby) ? 'desc' : 'asc');
+        // }
+        return view('materials.index', compact('type', 'tag_parents', 'tags', 'tag', 'tag_names', 'items'));
     }
 
     /**
@@ -42,8 +65,7 @@ class MaterialController extends Controller
     public function store(Request $request, MaterialRepository $rep)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'type' => ['required', new EnumValue(MaterialType::class, false)],
+            'type' => 'required',
         ]);
 
         try {
@@ -51,9 +73,9 @@ class MaterialController extends Controller
                 $errors = $validator->errors();
                 throw new Exception($errors->first());
             }
-            $model = $rep->create($request->all());
+            $data = $rep->batchCreate($request->all());
             if($request->ajax())
-                return response()->json($model);
+                return response()->json($data);
             return redirect()->route('materials.index');
         }
         catch(Exception $e) {
@@ -74,13 +96,11 @@ class MaterialController extends Controller
     {
         Validator::make($request->all(), [
             'data' => 'required|file',
-            'name' => 'required',
             'total' => 'required',
             'index' => 'required',
             'id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    // dd(Cache::has($value), $value, Cache::get($value));
                     if(!Cache::has($value))
                         $fail(__('The temporary id is invalid'));
                 }

@@ -96,7 +96,7 @@ trait MaterialThumnail
             }
 
             $src = data_get($extra_data, 'origin.path', null);
-            if(MaterialType::fromValue((int)$this->type)->is(MaterialType::Video)) {
+            if((int)$this->type == MaterialType::Video) {
                 FFMpeg::open($src)->getFrameFromSeconds(1)->export()->save($target);
                 $src = $target;
             }

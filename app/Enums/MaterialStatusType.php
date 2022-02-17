@@ -2,16 +2,14 @@
 
 namespace App\Enums;
 
-use BenSampo\Enum\Enum;
-
 /**
  * @method static static NotYet()
- * @method static static Combin()
+ * @method static static ProcessMaterialTemporary()
  * @method static static Done()
  */
-final class MaterialStatusType extends Enum
+final class MaterialStatusType extends BaseEnum
 {
-    const NotYet =   0;
-    const Combin =   1;
-    const Done = 2;
+    const NotYet = 1 << 0;
+    const ProcessMaterialTemporary = 1 << 1;
+    const Done = 1 << 2;
 }

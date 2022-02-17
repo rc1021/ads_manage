@@ -37,7 +37,7 @@ class ConvertVideoForDownloading implements ShouldQueue
             ->open($this->video->path)
             ->export()
             ->addFilter(['-vf', 'scale=1080:1080:force_original_aspect_ratio=decrease,pad=1080:1080:(ow-iw)/2:(oh-ih)/2'])
-            ->toDisk(Video::DiskDownload)
+            ->toDisk($this->video->disk)
             ->save($this->video->video_pad_path);
 
         $opener = FFMpeg::fromDisk($this->video->disk)->open($this->video->path);
@@ -46,11 +46,10 @@ class ConvertVideoForDownloading implements ShouldQueue
         $filter = 'split [main][tmp]; [main]scale=1920:1920:force_original_aspect_ratio=decrease [main]; [tmp] crop=(ih/16*9):ih,scale=iw/10:-2,gblur=sigma=5,scale=1920:1920 [vbg]; [vbg][main] overlay=0:(H-h)/2,scale=1080:1080:force_original_aspect_ratio=decrease';
         if($dar < 1)
             $filter = 'split [main][tmp]; [main]scale=1920:1920:force_original_aspect_ratio=decrease [main]; [tmp] crop=iw:(iw/16*9),scale=-2:ih/10,gblur=sigma=5,scale=1920:1920 [vbg]; [vbg][main] overlay=(W-w)/2:0,scale=1080:1080:force_original_aspect_ratio=decrease';
-        FFMpeg::fromDisk($this->video->disk)
-            ->open($this->video->path)
+        $opener
             ->export()
             ->addFilter(['-filter_complex', $filter])
-            ->toDisk(Video::DiskDownload)
+            ->toDisk($this->video->disk)
             ->save($this->video->video_gblur_path);
 
         $this->video->update([

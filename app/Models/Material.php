@@ -18,34 +18,22 @@ class Material extends Model
 {
     use HasFactory, SoftDeletes, Cachable, MaterialThumnail;
 
-    protected $fillable = ['title', 'type', 'extra_data'];
+    const DirectoryTemporary  = 'materials/tmp_materials/';
+    const DirectoryFeed  = 'materials/feeds/';
+    const DirectoryAudio = 'materials/audios/';
+    const DirectoryImage = 'materials/images/';
+    const DirectoryVideo = 'materials/videos/';
+    const DirectoryDownload = 'materials/downloadable/';
+    const DirectorySecret = 'materials/secret/';
+    const DirectoryStreamable = 'materials/streamable/';
+    const DirectoryThumnail = 'materials/thumnail/';
+
+    protected $guarded = [];
 
     protected $casts = [
         'extra_data' => AsArrayObject::class,
         'created_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    /**
-     * 給予 id 取得暫存目錄
-     *
-     * @param  mixed $id
-     * @return void
-     */
-    public static function GetTempDirectory($id)
-    {
-        return config('material.temporary').'/'.$id;
-    }
-
-    /**
-     * 給予 id 取得公開目錄
-     *
-     * @param  mixed $id
-     * @return void
-     */
-    public static function GetPublicDirectory($id)
-    {
-        return config('material.public').'/'.$id;
-    }
 
     /**
      * 建立素材, 自動重新命名
@@ -60,7 +48,7 @@ class Material extends Model
         // 取得素材類型
         $type = (int)data_get($data, 'type', MaterialType::Text);
         // 設定狀態
-        $data['extra_data']['status'] = MaterialType::fromValue($type)->is(MaterialType::Text) ? MaterialStatusType::Done : data_get($data, 'extra_data.status', MaterialStatusType::NotYet);
+        $data['status_type'] = ($type == MaterialType::Text) ?: MaterialStatusType::NotYet;
         // 重新命名最大次數
         $max_try_times = 10;
         do {
@@ -82,24 +70,14 @@ class Material extends Model
         throw new Exception('duplicate entry');
     }
 
-    /**
-     * 判斷是否處理完成且可用
-     *
-     * @return void
-     */
-    public function getIsReadyAttribute()
+    public function scopeDone($query)
     {
-        return data_get($this->extra_data, 'status') != 2;
+        return $query->where('status_type', ''.MaterialStatusType::Done);
     }
 
-    /**
-     * typeText 取得 Enum 的 key
-     *
-     * @return void
-     */
-    public function getTypeTextAttribute()
+    public function mediaable()
     {
-        return MaterialType::fromValue((int)$this->attributes['type'])->key;
+        return $this->morphTo();
     }
 
     /**

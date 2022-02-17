@@ -44,21 +44,21 @@ return [
 
         'downloadable_videos' => [
             'driver' => 'local',
-            'root' => storage_path('app/downloadable/videos'),
+            'root' => storage_path('app'),
             'url' => env('APP_URL').'/download_videos',
             'visibility' => 'public',
         ],
 
         'streamable_videos' => [
             'driver' => 'local',
-            'root' => storage_path('app/streamable/videos'),
+            'root' => storage_path('app'),
             'url' => env('APP_URL').'/streamable_videos',
             'visibility' => 'public',
         ],
 
         'thumnail_videos' => [
             'driver' => 'local',
-            'root' => storage_path('app/thumnail/videos'),
+            'root' => storage_path('app'),
             'url' => env('APP_URL').'/thumnail_videos',
             'visibility' => 'public',
         ],
@@ -94,9 +94,6 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        public_path('streamable_videos') => storage_path('app/streamable/videos'),
-        public_path('download_videos') => storage_path('app/downloadable/videos'),
-        public_path('thumnail_videos') => storage_path('app/thumnail/videos'),
     ],
 
 ];
