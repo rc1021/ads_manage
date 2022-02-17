@@ -6,7 +6,6 @@
 
         <title>Laravel</title>
 
-        @livewireStyles
         <link href="/css/app.css" rel="stylesheet">
         <script src="https://unpkg.com/@yaireo/tagify"></script>
         <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
@@ -17,7 +16,6 @@
             @yield('content')
         </div>
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-        @livewireScripts
         <script src="/js/app.js"></script>
     </body>
 </html>

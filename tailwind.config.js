@@ -39,7 +39,7 @@ module.exports = {
       addUtilities(utilities)
     },
   ],
-  purge: [
+  content: [
     './storage/framework/views/*.php',
     './resources/**/*.blade.php',
     './resources/**/*.js',
