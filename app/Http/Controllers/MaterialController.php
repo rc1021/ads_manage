@@ -145,22 +145,12 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Material $material, MaterialRepository $rep)
     {
-        $validator = Validator::make($request->all(), [
+        Validator::make($request->all(), [
             'title' => 'required|unique:materials,title,'.$material->id.',id',
-        ]);
-
-        try {
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                throw new Exception($errors->first());
-            }
-            return $rep->update($material, $request->all());
-        }
-        catch(Exception $e) {
-            if($request->ajax())
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 409);
-            abort(409, $e->getMessage());
-        }
+        ])->validate();
+        $rep->update($material, $request->all());
+        session()->flash('success', __('Material successfully updated.'));
+        return back();
     }
 
     /**
@@ -172,5 +162,7 @@ class MaterialController extends Controller
     public function destroy(Material $material)
     {
         $material->delete();
+        session()->flash('success', __('Material successfully delete.'));
+        return back();
     }
 }

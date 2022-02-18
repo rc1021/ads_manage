@@ -17,7 +17,7 @@
         <div class="flex-1 p-6">
             @include('materials.breadcrumbs')
             @include('materials.toolbar')
-            @include('materials.index.' . $type_str)
+            @include('materials.index.main')
         </div>
     </div>
 @endsection

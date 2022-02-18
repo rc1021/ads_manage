@@ -90,22 +90,26 @@ class MaterialTagController extends Controller
      */
     public function update(Request $request, MaterialTag $materialTag)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:material_tags',
-        ]);
+        Validator::make($request->all(), [
+            'name' => 'required|unique:material_tags,name,' . $materialTag->id,
+            'parent_id' => [
+                function ($attribute, $value, $fail) use ($materialTag) {
+                    if($value == $materialTag->id) {
+                        $fail('tag can not move to self.');
+                        return ;
+                    }
+                    $materialTag->loadCount('children');
+                    if ($value && $materialTag->children_count > 0) {
+                        $fail($materialTag->name.' has children(' . $materialTag->children_count . ').');
+                        return ;
+                    }
+                }
+            ],
+        ])->validate();
 
-        try {
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                throw new Exception($errors->first());
-            }
-            $materialTag->update(collect($request->all())->only(['name'])->toArray());
-        }
-        catch(Exception $e) {
-            if($request->ajax())
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 409);
-            abort(409, $e->getMessage());
-        }
+        $materialTag->update(collect($request->all())->only(['name', 'parent_id'])->toArray());
+        session()->flash('success', __('Material tag successfully updated.'));
+        return back();
     }
 
     /**
@@ -116,6 +120,13 @@ class MaterialTagController extends Controller
      */
     public function destroy(MaterialTag $materialTag)
     {
-        $materialTag->delete();
+        if($materialTag->drop) {
+            MaterialTag::whereIn('id', $materialTag->children->pluck('id')->toArray())->update(['parent_id' => 1]);
+            $materialTag->forceDelete();
+            session()->flash('success', $materialTag->name . ' ' . __('Tag successfully deleted.'));
+            return back();
+        }
+        session()->flash('error', $materialTag->name . ' ' . __('Tag can not delete.'));
+        return back();
     }
 }

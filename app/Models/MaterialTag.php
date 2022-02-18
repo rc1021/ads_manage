@@ -12,7 +12,7 @@ class MaterialTag extends Model
 {
     use HasFactory, SoftDeletes, Cachable;
 
-    protected $fillable = ['name', 'parent_id'];
+    protected $guarded = [];
 
     /**
      * 取得此標籤底下的文案

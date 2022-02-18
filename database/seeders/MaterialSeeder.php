@@ -31,11 +31,11 @@ class MaterialSeeder extends Seeder
         DB::table('videos')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         MaterialTag::insert([
-            ['id' => 1, 'name' => '未命名', 'parent_id' => 0],
-            ['id' => 2, 'name' => '米森 vilson', 'parent_id' => 1],
-            ['id' => 3, 'name' => '食品', 'parent_id' => 1],
-            ['id' => 4, 'name' => 'Vilson Park X KOMAX', 'parent_id' => 1],
-            ['id' => 5, 'name' => 'Vilson Park', 'parent_id' => 1],
+            ['id' => 1, 'name' => '未命名', 'parent_id' => 0, 'drop' => false],
+            ['id' => 2, 'name' => '米森 vilson', 'parent_id' => 1, 'drop' => true],
+            ['id' => 3, 'name' => '食品', 'parent_id' => 1, 'drop' => true],
+            ['id' => 4, 'name' => 'Vilson Park X KOMAX', 'parent_id' => 1, 'drop' => true],
+            ['id' => 5, 'name' => 'Vilson Park', 'parent_id' => 1, 'drop' => true],
         ]);
         $materials = [
             ['tag' => [2, 3], 'type' => '1', 'status_type' => '4', 'title' => '【米森 vilson】玫瑰鹽烤-有機什錦纖果(160g/罐)'],

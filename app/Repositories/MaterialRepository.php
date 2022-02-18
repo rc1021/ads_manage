@@ -117,10 +117,22 @@ class MaterialRepository
 
         // 更改素材標籤
         if($keys->contains('tags')) {
-            $material->tags()->sync($input->get('tags', []));
+            $material->tags()->sync($this->getTagIds($input->get('tags', [])));
         }
 
         return $material;
+    }
+
+    private function getTagIds($tags = []) : array
+    {
+        return collect($tags)->map(function ($item, $key) {
+                $tag = MaterialTag::firstOrCreate([
+                    'name' => $item
+                ]);
+                if($tag->wasRecentlyCreated && $tag->parent_id == 0)
+                    $tag->update(['parent_id' => 1]);
+                return $tag;
+            })->pluck('id')->all();
     }
 
     /**

@@ -41,7 +41,7 @@ Route::post('snowflake', function (Request $request) {
 })->name('snowflake.store');
 
 Route::post('materials/upload', MaterialController::class."@upload")->name('materials.upload');
-Route::resource('materials', MaterialController::class)->only(['index', 'store', 'update', 'show']);
+Route::resource('materials', MaterialController::class)->only(['index', 'store', 'update', 'show', 'destroy']);
 Route::resource('material_tags', MaterialTagController::class)->only(['store', 'update', 'destroy']);
 
 Route::get('videos/redo/{video}', VideoController::class.'@redo')->name('videos.redo');

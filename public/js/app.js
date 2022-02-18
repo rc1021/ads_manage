@@ -2235,7 +2235,7 @@ FileCreator.prototype.renew_process = function () {
 FileCreator.prototype.done = function () {
   var process = Math.floor(this.get('succeed') / this.get('part_count') * 100),
       name = this.get('name');
-  this._visualization_text.innerHTML = '<span title="' + name + '" class="text-base truncate max-w-sm flex-1 font-medium text-gray-700 dark:text-white">' + '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-sky-600 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>' + name + '</span>' + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>' + '<input type="hidden" name="temporaries[]" value="' + this.get('id') + '">';
+  this._visualization_text.innerHTML = '<span title="' + name + '" class="text-base truncate max-w-sm flex-1 font-medium text-gray-700 dark:text-white">' + '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-main-600 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>' + name + '</span>' + '<span class="text-sm flex-none font-medium text-gray-700 dark:text-white">' + process + '%</span>' + '<input type="hidden" name="temporaries[]" value="' + this.get('id') + '">';
 };
 
 FileCreator.prototype.set = function (key, value) {
