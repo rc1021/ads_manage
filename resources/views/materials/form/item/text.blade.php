@@ -7,7 +7,7 @@
                 <div>
                     <div class="flex border-b">
                         <div class="flex flex-col flex-1">
-                            <input x-model="texts[index]" x-on:paste="paste_rows($event.clipboardData)" type="text" name="texts[]" class="w-full border-0 focus:outline-none p-2 sm:text-sm border-gray-300 rounded-md" :placeholder="'{{ __('Copy ') }}' + (index + 1) + ' (`Ctrl + v` to paste rows)'" autocomplete="off">
+                            <input x-model="texts[index]" x-on:paste="paste_rows($event, index)" type="text" name="texts[]" class="w-full border-0 focus:outline-none p-2 sm:text-sm border-gray-300 rounded-md" :placeholder="'{{ __('Copy ') }}' + (index + 1) + ' (`Ctrl + v` to paste rows)'" autocomplete="off">
                         </div>
                         <div x-on:click="removeInput(text)" class="flex-none flex items-center justify-end bg-white text-sm cursor-pointer mx-2">
                             <svg class="h-4 w-4 stroke-red-500 hover:stroke-red-700" fill="none" viewBox="0 0 24 24">

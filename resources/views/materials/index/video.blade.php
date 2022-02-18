@@ -18,8 +18,17 @@
                         </div>
                     </div>
                     @endif
-                    <div class="absolute grid justify-items-end items-end transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 top-0 left-0 w-full h-full text-sm bg-white/75">
-                        <div>
+                    <div class="absolute z-10 flex justify-between justify-items-end items-end top-0 left-2 right-2 h-full text-sm bg-no-repeat"
+                        data-rel="vtt-background"
+                        data-vtt-background="{{ json_encode($item->mediaable->public_thumbnail_vtt_parse) }}">
+                        <div class="flex p-1">
+                            <div class="rounded-full bg-white p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-slate-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100">
                             <button x-on:click.prevent="edit({{ $item->toJson() }})" type="button" class="rounded-lg p-1 px-1.5 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-700 border border-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-slate-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

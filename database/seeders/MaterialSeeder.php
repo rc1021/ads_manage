@@ -36,6 +36,16 @@ class MaterialSeeder extends Seeder
             ['id' => 3, 'name' => '食品', 'parent_id' => 1, 'drop' => true],
             ['id' => 4, 'name' => 'Vilson Park X KOMAX', 'parent_id' => 1, 'drop' => true],
             ['id' => 5, 'name' => 'Vilson Park', 'parent_id' => 1, 'drop' => true],
+            ['id' => 6, 'name' => '常態活動', 'parent_id' => 0, 'drop' => true],
+            ['id' => 7, 'name' => '短期活動', 'parent_id' => 0, 'drop' => true],
+            ['id' => 8, 'name' => '家飾寢具', 'parent_id' => 0, 'drop' => true],
+            ['id' => 9, 'name' => '常態A', 'parent_id' => 6, 'drop' => true],
+            ['id' => 10, 'name' => '常態B', 'parent_id' => 6, 'drop' => true],
+            ['id' => 11, 'name' => '常態C', 'parent_id' => 6, 'drop' => true],
+            ['id' => 12, 'name' => '卡通床包85折', 'parent_id' => 7, 'drop' => true],
+            ['id' => 13, 'name' => '床墊新品', 'parent_id' => 7, 'drop' => true],
+            ['id' => 14, 'name' => '冬季棉被', 'parent_id' => 7, 'drop' => true],
+            ['id' => 15, 'name' => '精梳棉床包', 'parent_id' => 8, 'drop' => true],
         ]);
         $materials = [
             ['tag' => [2, 3], 'type' => '1', 'status_type' => '4', 'title' => '【米森 vilson】玫瑰鹽烤-有機什錦纖果(160g/罐)'],

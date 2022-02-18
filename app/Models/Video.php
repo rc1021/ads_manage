@@ -45,15 +45,30 @@ class Video extends Model
 
     public function getThumbnailUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_path); }
     public function getThumbnailGifUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_gif_path); }
-    // public function getThumbnailVttUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_vtt_Path); }
+    public function getThumbnailVttUrlAttribute() { return Storage::disk('public')->url($this->thumbnail_vtt_path); }
     public function getVideoPadUrlAttribute() { return Storage::disk('public')->url($this->video_pad_path); }
     public function getM3u8PadUrlAttribute() { return Storage::disk('public')->url($this->m3u8_pad_path); }
     public function getVideoGblurUrlAttribute() { return Storage::disk('public')->url($this->video_gblur_path); }
     public function getM3u8GblurUrlAttribute() { return Storage::disk('public')->url($this->m3u8_gblur_path); }
+    public function getPublicThumbnailVttParseAttribute() : array
+    {
+        $vtt = $this->thumbnail_vtt_parse;
+        if(array_key_exists('cues', $vtt)) {
+            $vtt['cues'] = collect($vtt['cues'])->map(function ($item) {
+                $item['text'] = Storage::disk('public')->url($item['text']);
+                return $item;
+            });
+        }
+        return $vtt;
+    }
     public function getThumbnailVttParseAttribute() : array
     {
-        $parser = new \Podlove\Webvtt\Parser;
-        return $parser->parse(Storage::disk('thumnail_videos')->get($this->attributes['id'].'/thumbnails.vtt'));
+        try {
+            $parser = new \Podlove\Webvtt\Parser;
+            return $parser->parse(Storage::get($this->thumbnail_vtt_path));
+        }
+        catch(Exception $e) {}
+        return [];
     }
 
     public function material()

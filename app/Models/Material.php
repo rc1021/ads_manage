@@ -48,20 +48,19 @@ class Material extends Model
         // 取得素材類型
         $type = (int)data_get($data, 'type', MaterialType::Text);
         // 設定狀態
-        $data['status_type'] = ($type == MaterialType::Text) ?: MaterialStatusType::NotYet;
+        $data['status_type'] = ($type == MaterialType::Text) ? "".MaterialStatusType::Done : "".MaterialStatusType::NotYet;
         // 重新命名最大次數
         $max_try_times = 10;
         do {
             try {
-                return Material::create($data);
+                return self::create($data);
             }
             catch(QueryException $e) {
                 $errorCode = $e->errorInfo[1];
                 if($errorCode != 1062)
                     throw $e;
-                sleep(1);
                 // continue, if duplicate entry problem
-                $data['title'] = sprintf('[%s]%s', date('Y-m-d H:i:s'), $title);
+                $data['title'] = sprintf('[%s]%s', app('snowflake')->id(), $title);
                 // -- or --
                 // list($usec, $sec) = explode(" ", microtime());
                 // $data['title'] = sprintf('%f%s', (float)$usec + (float)$sec, data_get($input, 'title'));

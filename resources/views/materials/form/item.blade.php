@@ -89,8 +89,12 @@
                     return n == keyword;
                 });
             },
-            paste_rows(clipboardData) {
-                this.texts = _.uniq(this.texts.concat(clipboardData.getData('Text').split(/\r?\n/)));
+            paste_rows(event) {
+                let app = this;
+                this.texts = _.uniq(this.texts.concat(event.clipboardData.getData('Text').split(/\r?\n/)));
+                setTimeout(function () {
+                    app.removeInput(event.target.value);
+                }, 250 * Math.ceil(this.texts.length / 1000));
             }
         }
     }

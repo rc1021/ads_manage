@@ -6,6 +6,6 @@
     data-type="{{ \App\Enums\MaterialType::Image }}"
     data-temporary-url="{{ route('snowflake.store') }}"
     data-url="{{ route('materials.upload') }}"
-    data-size-limit="{{ 1 * 1024 * 1024 }}">
+    data-size-limit="{{ 2 * 1024 * 1024 }}">
     {{-- drop items --}}
 </div>

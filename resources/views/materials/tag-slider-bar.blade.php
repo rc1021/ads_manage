@@ -6,7 +6,7 @@
         </svg>
         </span>
         <span class="sr-only">Search</span>
-        <input type="text" x-model="search" name="search" autocomplete="off" class="block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="Search for tag...">
+        <input type="text" onmouseenter="this.focus(); this.select();" x-model="search" name="search" autocomplete="off" class="block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="Search for tag...">
     </label>
     <div class="bg-white px-4 space-y-3">
         <a href="{{ route('materials.index', array_merge($query, ['act' => ($act == 'tag-edit') ? '' : 'tag-edit'])) }}" class="items-center text-base font-semibold text-slate-900 dark:text-slate-200">
@@ -22,14 +22,20 @@
         </a>
     </div>
     <hr>
+    @php
+        $tmp_query = array_filter($query, function($v, $k) {
+            return $k != 'tid'
+                || $k != 'page';
+        }, ARRAY_FILTER_USE_BOTH);
+    @endphp
     <div class="bg-white px-4 space-y-3">
-        <a href="{{ route('materials.index', array_filter($query, function($v, $k) { return $k != 'tid'; }, ARRAY_FILTER_USE_BOTH)) }}" class="block">
+        <a href="{{ route('materials.index', $tmp_query) }}" class="block">
             <h2 class="text-base font-semibold text-slate-900 hover:text-main-400 dark:text-slate-200 flex items-center space-x-1 {{ ($tag_id > 0 || $is_trashed) ?: 'text-main-400' }}">
                 {{ __('All Materials') }}
             </h2>
         </a>
         @foreach ($tag_parents as $parent)
-            <a href="{{ route('materials.index', array_merge($query, ['tid' => $parent->id])) }}" class="block text-slate-900 dark:text-slate-200 {{ $tag_id == $parent->id ? 'text-main-400' : '' }}">
+            <a href="{{ route('materials.index', array_merge($tmp_query, ['tid' => $parent->id])) }}" class="block text-slate-900 dark:text-slate-200 {{ $tag_id == $parent->id ? 'text-main-400' : '' }}">
                 <h2 class="text-base font-semibold group">
                     {{ $parent->name }}
                     @if ($parent->materials_count > 0)
@@ -57,7 +63,7 @@
             <ul role="list" class="mt-3 list-disc pl-5 space-y-3 text-slate-600">
                 @foreach ($tags->get($parent->id) as $item)
                 <li x-show="!search || !search || '{{ $item->name }}'.includes(search)" class="group space-y-1 hover:text-main-400 {{ $tag_id == $item->id ? 'text-main-400' : '' }}">
-                    <a href="{{ route('materials.index', array_merge($query, ['tid' => $item->id])) }}">
+                    <a href="{{ route('materials.index', array_merge($tmp_query, ['tid' => $item->id])) }}">
                         <span>{{ $item->name }}</span>
                         @if ($item->materials_count > 0)
                         <span class="text-xs rounded-full px-2 py-1 bg-slate-100 font-semibold text-slate-700">{{ $item->materials_count }}</span>

@@ -4,6 +4,7 @@
     // - Default -
     $query = request()->query();
     unset($query['search']);
+    unset($query['page']);
     $act = data_get($query, 'act');
     $tag_id = data_get($tag, 'id', 0);
     $is_trashed = data_get($query, 'tid', 0) == -1;

@@ -42,7 +42,7 @@ class MaterialController extends Controller
             $items->whereHas('tags', function (Builder $query) use ($tag) {
                 $query->where('id', $tag->id);
             });
-        $items = $items->paginate(50);
+        $items = $items->paginate(15);
         // if($this->sortby_col) {
         //     $items->orderBy($this->sortby_col, ($this->orderby) ? 'desc' : 'asc');
         // }
@@ -67,25 +67,15 @@ class MaterialController extends Controller
      */
     public function store(Request $request, MaterialRepository $rep)
     {
-        $validator = Validator::make($request->all(), [
+        Validator::make($request->all(), [
             'type' => 'required',
-        ]);
+        ])->validate();
 
-        try {
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                throw new Exception($errors->first());
-            }
-            $data = $rep->batchCreate($request->all());
-            if($request->ajax())
-                return response()->json($data);
-            return redirect()->route('materials.index');
-        }
-        catch(Exception $e) {
-            if($request->ajax())
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 409);
-            abort(409, $e->getMessage());
-        }
+        $data = $rep->batchCreate($request->all());
+        session()->flash('success', __('Material successfully created.'));
+        if($request->ajax())
+            return response()->json($data);
+        return redirect()->route('materials.index');
     }
 
     /**
