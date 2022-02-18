@@ -30,4 +30,22 @@
             </span>
         </a>
     </div>
+    <form method="GET" action="{{ route('materials.index') }}" class="flex space-x-1 rounded-md shadow-sm" role="group">
+        @foreach ($query as $k => $v)
+            @if ($k != 'search')
+            <input type="hidden" name="{{ $k }}" value="{{ $v }}" />
+            @endif
+        @endforeach
+        <label class="relative">
+            <span class="sr-only">Search</span>
+            <input type="text" name="search" value="{{ request()->input('search') }}" autocomplete="off" class="block bg-white w-full border border-slate-300 rounded-md py-2 px-3 shadow-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="{{ __('Search for material title') }}...">
+        </label>
+        <button class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm p-2 bg-main-500 text-base font-medium text-white hover:bg-main-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-main-500 sm:ml-3 sm:w-auto sm:text-sm">
+            <span class="flex items-center">
+                <svg class="h-5 w-5 fill-white" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+        </button>
+    </form>
 </div>

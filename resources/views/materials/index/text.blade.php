@@ -5,7 +5,7 @@
         <div class="inline-block py-2 min-w-full sm:px-6 lg:px-8 space-y-4">
             <div class="max-w-screen-lg divide-y">
                 @foreach ($items as $item)
-                <div class="group relative flex hover:bg-stone-200 overflow-hidden p-1 pt-1.5">
+                <div class="group relative flex hover:bg-slate-200 overflow-hidden p-1 pt-1.5">
                     <div class="flex-1 flex items-center gap-1">
                         <p title="{{ $item->title }}" class="shrink-0 truncate">{{ $item->title }}</p>
                     </div>
@@ -14,11 +14,11 @@
                         @if($item->tags_count)
                         <div class="rounded-lg p-1 px-1.5 bg-white flex border border-gray-500">
                             <span>
-                                <svg class="h-5 w-5 stroke-stone-400 group-hover:stroke-stone-500 mr-1" fill="none" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 stroke-slate-400 group-hover:stroke-slate-500 mr-1" fill="none" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                 </svg>
                             </span>
-                            <p class="max-w-lg divide-x truncate text-stone-600 text-sm font-medium whitespace-nowrap">
+                            <p class="max-w-lg divide-x truncate text-slate-600 text-sm font-medium whitespace-nowrap">
                             @foreach ($item->tags as $tag)
                             <span class="pl-1">{{ $tag->name }}</span>
                             @endforeach

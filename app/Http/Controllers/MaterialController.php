@@ -33,6 +33,9 @@ class MaterialController extends Controller
         $tag_names = MaterialTag::where('id', '>', 1)->pluck('name')->toJson();
         // relation items of the choice tag
         $items = Material::done()->with('tags', 'mediaable')->withCount('tags')->where('type', ''.$type);
+        if ($search = $request->input('search')) {
+            $items->where('title', 'LIKE', "%$search%");
+        }
         if ($request->input('tid') < 0)
             $items->onlyTrashed();
         else if($tag && $tag->id > 0)

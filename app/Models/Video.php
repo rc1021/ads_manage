@@ -66,13 +66,15 @@ class Video extends Model
      *
      * @return void
      */
-    public function letsConvert($sync = false)
+    public function letsConvert($sync = false, $video = false)
     {
         if($sync) {
             try {
                 ConvertVideoForThumbing::dispatchSync($this);
-                ConvertVideoForDownloading::dispatchSync($this);
-                ConvertVideoForStreaming::dispatchSync($this);
+                if($video) {
+                    ConvertVideoForDownloading::dispatchSync($this);
+                    ConvertVideoForStreaming::dispatchSync($this);
+                }
             }
             catch(Exception $e) {
                 $this->update([
@@ -81,12 +83,12 @@ class Video extends Model
             }
         }
         else {
-            Bus::chain([
-                new ConvertVideoForThumbing($this),
-                new ConvertVideoForDownloading($this),
-                new ConvertVideoForStreaming($this),
-            ])
-            ->catch(function (Throwable $e) {
+            $jobs = [new ConvertVideoForThumbing($this)];
+            if($video) {
+                array_push($jobs, new ConvertVideoForDownloading($this));
+                array_push($jobs, new ConvertVideoForStreaming($this));
+            }
+            Bus::chain($jobs)->catch(function (Throwable $e) {
                 $this->update([
                     'error' => $e->getMessage(),
                 ]);

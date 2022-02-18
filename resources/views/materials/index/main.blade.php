@@ -1,5 +1,6 @@
 <div x-data="materials_index_items()">
     @include('materials.index.' . $type_str)
+    {{ $items->links() }}
     <!-- Edit Modal -->
     <div x-show="update_url" style="display: none" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <form method="POST" :action="update_url">

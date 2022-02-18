@@ -77,11 +77,20 @@
 <script>
     function materials_form_item () {
         return {
+            foo: '',
             type: 1, // 新增類型
             modal: false,
             texts: {!! json_encode(old('texts', [null]), JSON_UNESCAPED_UNICODE) !!},
             add_text() {
                 this.texts.push(null);
+            },
+            removeInput(keyword) {
+                _.remove(this.texts, function(n) {
+                    return n == keyword;
+                });
+            },
+            paste_rows(clipboardData) {
+                this.texts = _.uniq(this.texts.concat(clipboardData.getData('Text').split(/\r?\n/)));
             }
         }
     }
