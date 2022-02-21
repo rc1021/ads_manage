@@ -31,17 +31,7 @@ class MaterialTag extends Model
      */
     public function parent()
     {
-        return $this->belongsTo(MaterialTag::class, 'parent_id');
-    }
-
-    /**
-     * 取得此標籤下一層標籤
-     *
-     * @return void
-     */
-    public function children()
-    {
-        return $this->hasMany(MaterialTag::class, 'parent_id');
+        return $this->belongsTo(MaterialTagFolder::class, 'folder_id');
     }
 
     /**

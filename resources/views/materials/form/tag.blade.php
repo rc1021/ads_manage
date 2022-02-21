@@ -32,8 +32,8 @@
                             <label for="name" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-focus:dark:text-main-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Tag Name') }}</label>
                         </div>
                         <div class="relative w-full group">
-                            <label for="parent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">{{ __('Parent Tag') }}</label>
-                            <select name="parent_id" id="parent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-main-500 dark:focus:border-main-500">
+                            <label for="parent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">{{ __('Folder Tag') }}</label>
+                            <select name="folder_id" id="parent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-main-500 dark:focus:border-main-500">
                                 <option value="0">--</option>
                                 @foreach ($tag_parents as $parent)
                                 <option value="{{ $parent->id }}">{{ $parent->name }}</option>

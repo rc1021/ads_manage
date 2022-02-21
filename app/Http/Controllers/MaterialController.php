@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\MaterialType;
 use App\Models\Material;
 use App\Models\MaterialTag;
+use App\Models\MaterialTagFolder;
 use App\Repositories\MaterialRepository;
 use BenSampo\Enum\Rules\EnumValue;
 use Exception;
@@ -24,9 +25,13 @@ class MaterialController extends Controller
     {
         $type = $request->input('type', MaterialType::Text);
         // level 0 tags
-        $tag_parents = MaterialTag::where('parent_id', 0)->withCount('materials')->get();
+        $tag_parents = MaterialTagFolder::withCount('tags')->orderBy('id', 'desc')->get();
+        $tag_folder = new MaterialTagFolder();
+        $tag_folder->id = 0;
+        $tag_folder->name = '未分類';
+        $tag_parents->prepend($tag_folder);
         // level 1 tags
-        $tags = MaterialTag::where('parent_id', '>', 0)->withCount('materials')->get()->groupBy('parent_id');
+        $tags = MaterialTag::withCount('materials')->orderBy('id', 'desc')->get()->groupBy('folder_id');
         // choice tag
         $tag = MaterialTag::find($request->input('tid'));
         // the level 1 array of tag name
@@ -42,10 +47,7 @@ class MaterialController extends Controller
             $items->whereHas('tags', function (Builder $query) use ($tag) {
                 $query->where('id', $tag->id);
             });
-        $items = $items->paginate(15);
-        // if($this->sortby_col) {
-        //     $items->orderBy($this->sortby_col, ($this->orderby) ? 'desc' : 'asc');
-        // }
+        $items = $items->paginate(20);
         return view('materials.index', compact('type', 'tag_parents', 'tags', 'tag', 'tag_names', 'items'));
     }
 

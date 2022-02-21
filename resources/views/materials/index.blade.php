@@ -13,14 +13,12 @@
 
 @section('content')
     @include('materials.toastr')
-    <div class="flex">
-        <div class="flex-none min-w-max max-w-2xl">
-            @include('materials.tag-slider-bar')
-        </div>
-        <div class="flex-1 p-6">
+    <div class="relative">
+        @include('materials.tag-slider-bar')
+        <div class="lg:pl-[19.5rem] p-6 relative">
             @include('materials.breadcrumbs')
             @include('materials.toolbar')
-            @include('materials.index.main')
+            @include('materials.content')
         </div>
     </div>
 @endsection

@@ -1,4 +1,4 @@
-<nav class="flex" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
     <ol class="inline-flex items-center py-1  space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
             <a href="/" class="inline-flex items-center text-lg text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">

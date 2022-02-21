@@ -6,6 +6,7 @@ use App\Enums\MaterialStatusType;
 use App\Models\Image;
 use App\Models\Material;
 use App\Models\MaterialTag;
+use App\Models\MaterialTagFolder;
 use App\Models\MaterialTagMaterial;
 use App\Models\Video;
 use Illuminate\Database\Seeder;
@@ -26,26 +27,32 @@ class MaterialSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('material_tag_materials')->truncate();
         DB::table('material_tags')->truncate();
+        DB::table('material_tag_folders')->truncate();
         DB::table('materials')->truncate();
         DB::table('images')->truncate();
         DB::table('videos')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        MaterialTagFolder::insert([
+            ['id' => 1, 'name' => '常態活動'],
+            ['id' => 2, 'name' => '短期活動'],
+            ['id' => 3, 'name' => '家飾寢具'],
+        ]);
         MaterialTag::insert([
-            ['id' => 1, 'name' => '未命名', 'parent_id' => 0, 'drop' => false],
-            ['id' => 2, 'name' => '米森 vilson', 'parent_id' => 1, 'drop' => true],
-            ['id' => 3, 'name' => '食品', 'parent_id' => 1, 'drop' => true],
-            ['id' => 4, 'name' => 'Vilson Park X KOMAX', 'parent_id' => 1, 'drop' => true],
-            ['id' => 5, 'name' => 'Vilson Park', 'parent_id' => 1, 'drop' => true],
-            ['id' => 6, 'name' => '常態活動', 'parent_id' => 0, 'drop' => true],
-            ['id' => 7, 'name' => '短期活動', 'parent_id' => 0, 'drop' => true],
-            ['id' => 8, 'name' => '家飾寢具', 'parent_id' => 0, 'drop' => true],
-            ['id' => 9, 'name' => '常態A', 'parent_id' => 6, 'drop' => true],
-            ['id' => 10, 'name' => '常態B', 'parent_id' => 6, 'drop' => true],
-            ['id' => 11, 'name' => '常態C', 'parent_id' => 6, 'drop' => true],
-            ['id' => 12, 'name' => '卡通床包85折', 'parent_id' => 7, 'drop' => true],
-            ['id' => 13, 'name' => '床墊新品', 'parent_id' => 7, 'drop' => true],
-            ['id' => 14, 'name' => '冬季棉被', 'parent_id' => 7, 'drop' => true],
-            ['id' => 15, 'name' => '精梳棉床包', 'parent_id' => 8, 'drop' => true],
+            ['id' => 1, 'name' => '未命名', 'material_tag_folder_id' => 0],
+            ['id' => 2, 'name' => '米森 vilson', 'material_tag_folder_id' => 0],
+            ['id' => 3, 'name' => '食品', 'material_tag_folder_id' => 0],
+            ['id' => 4, 'name' => 'Vilson Park X KOMAX', 'material_tag_folder_id' => 0],
+            ['id' => 5, 'name' => 'Vilson Park', 'material_tag_folder_id' => 0],
+            ['id' => 6, 'name' => '常態活動', 'material_tag_folder_id' => 0],
+            ['id' => 7, 'name' => '短期活動', 'material_tag_folder_id' => 0],
+            ['id' => 8, 'name' => '家飾寢具', 'material_tag_folder_id' => 0],
+            ['id' => 9, 'name' => '常態A', 'material_tag_folder_id' => 1],
+            ['id' => 10, 'name' => '常態B', 'material_tag_folder_id' => 1],
+            ['id' => 11, 'name' => '常態C', 'material_tag_folder_id' => 1],
+            ['id' => 12, 'name' => '卡通床包85折', 'material_tag_folder_id' => 2],
+            ['id' => 13, 'name' => '床墊新品', 'material_tag_folder_id' => 2],
+            ['id' => 14, 'name' => '冬季棉被', 'material_tag_folder_id' => 2],
+            ['id' => 15, 'name' => '精梳棉床包', 'material_tag_folder_id' => 3],
         ]);
         $materials = [
             ['tag' => [2, 3], 'type' => '1', 'status_type' => '4', 'title' => '【米森 vilson】玫瑰鹽烤-有機什錦纖果(160g/罐)'],
