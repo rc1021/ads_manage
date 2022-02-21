@@ -41,6 +41,7 @@ Route::post('snowflake', function (Request $request) {
 })->name('snowflake.store');
 
 Route::post('materials/upload', MaterialController::class."@upload")->name('materials.upload');
+Route::put('materials/restore/{material}', MaterialController::class."@restore")->withTrashed()->name('materials.restore');
 Route::resource('materials', MaterialController::class)->only(['index', 'store', 'update', 'show', 'destroy']);
 Route::resource('material_tags', MaterialTagController::class)->only(['store', 'update', 'destroy']);
 Route::post('material_tag_folders', MaterialTagController::class."@fstore")->name('material_tag_folders.store');

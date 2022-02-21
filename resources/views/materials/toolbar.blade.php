@@ -38,7 +38,7 @@
         @endforeach
         <label class="relative">
             <span class="sr-only">Search</span>
-            <input type="text" name="search" onmouseenter="this.focus(); this.select();" value="{{ request()->input('search') }}" autocomplete="off" class="block bg-white w-full border border-slate-300 rounded-md py-2 px-3 shadow-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="{{ __('Search for material title') }}...">
+            <input type="text" name="search" onmouseenter="this.focus(); this.select();" value="{{ request()->input('search') }}" autocomplete="off" class="block bg-white w-full border border-slate-900/10 rounded-md py-2 px-3 shadow-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="{{ __('Search for material title') }}...">
         </label>
         <button class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm p-2 bg-main-500 text-base font-medium text-white hover:bg-main-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-main-500 sm:ml-3 sm:w-auto sm:text-sm">
             <span class="flex items-center">

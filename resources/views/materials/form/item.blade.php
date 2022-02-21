@@ -53,6 +53,9 @@
                                         let el = document.getElementById('tag_for_new_material');
                                         let tagify = new Tagify (el, {
                                             whitelist: {!! $tag_names !!},
+                                            dropdown: {
+                                                enabled: 0,
+                                            },
                                         });
                                     })
                                 </script>

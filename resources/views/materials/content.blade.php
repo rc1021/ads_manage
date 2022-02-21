@@ -129,6 +129,17 @@
                 this.title = item.title;
                 this.drop_url = '{{ route('materials.destroy', 'ref-id') }}'.replace('ref-id', item.id);
             },
+            restore(item) {
+                axios.post('{{ route('materials.restore', 'ref-id') }}'.replace('ref-id', item.id), {
+                    _method: 'PUT'
+                })
+                .then(function (response) {
+                    window.location.reload();
+                })
+                .catch(function (error) {
+                    toastr.error(error, null, {timeOut: 5 * 1000});
+                });
+            },
             edit(item) {
                 this.id = item.id;
                 this.title = item.title;

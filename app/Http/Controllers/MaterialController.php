@@ -25,17 +25,17 @@ class MaterialController extends Controller
     {
         $type = $request->input('type', MaterialType::Text);
         // level 0 tags
-        $tag_parents = MaterialTagFolder::withCount('tags')->orderBy('id', 'desc')->get();
+        $tag_parents = MaterialTagFolder::withCount('tags')->orderBy('name')->get();
         $tag_folder = new MaterialTagFolder();
         $tag_folder->id = 0;
         $tag_folder->name = '未分類';
         $tag_parents->prepend($tag_folder);
         // level 1 tags
-        $tags = MaterialTag::withCount('materials')->orderBy('id', 'desc')->get()->groupBy('folder_id');
+        $tags = MaterialTag::withCount('materials')->orderBy('name')->get()->groupBy('folder_id');
         // choice tag
         $tag = MaterialTag::find($request->input('tid'));
         // the level 1 array of tag name
-        $tag_names = MaterialTag::where('id', '>', 1)->pluck('name')->toJson();
+        $tag_names = MaterialTag::where('id', '>', 1)->orderBy('id', 'desc')->pluck('name')->toJson();
         // relation items of the choice tag
         $items = Material::done()->with('tags', 'mediaable')->withCount('tags')->where('type', ''.$type);
         if ($search = $request->input('search')) {
@@ -47,7 +47,7 @@ class MaterialController extends Controller
             $items->whereHas('tags', function (Builder $query) use ($tag) {
                 $query->where('id', $tag->id);
             });
-        $items = $items->paginate(20);
+        $items = $items->orderBy('id', 'desc')->paginate(20);
         return view('materials.index', compact('type', 'tag_parents', 'tags', 'tag', 'tag_names', 'items'));
     }
 
@@ -158,6 +158,15 @@ class MaterialController extends Controller
     {
         $material->delete();
         session()->flash('success', __('Material successfully delete.'));
+        return back();
+    }
+
+    public function restore(Material $material)
+    {
+        $material->restore();
+        session()->flash('success', __('Material successfully restored.'));
+        if(request()->ajax())
+            return ;
         return back();
     }
 }
