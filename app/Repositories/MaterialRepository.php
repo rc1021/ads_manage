@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Enums\MaterialType;
 use App\Jobs\MaterialUploadCombiner;
+use App\Jobs\ProcessMaterialFromUrl;
 use App\Jobs\ProcessMaterialTemporary;
 use App\Models\Image;
 use App\Models\Material;
@@ -13,6 +14,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MaterialRepository
 {
@@ -52,10 +54,18 @@ class MaterialRepository
                 ]));
             }
         }
-        // temporary
-        elseif($input->has('temporaries') && count($items = array_filter($input->get('temporaries', []))) > 0) {
-            foreach ($items as $key => $value) {
-                $models->push($this->createFromTemporaryID($value));
+        else {
+            // temporary
+            if($input->has('temporaries') && count($items = array_filter($input->get('temporaries', []))) > 0) {
+                foreach ($items as $key => $value) {
+                    $models->push($this->createFromTemporaryID($value));
+                }
+            }
+            // urls
+            if($input->has('urls') && count($urls = array_filter(explode(PHP_EOL, $input->get('urls', '')))) > 0) {
+                foreach ($urls as $key => $value) {
+                    $models->push($this->createFromUrl($value));
+                }
             }
         }
 
@@ -76,6 +86,22 @@ class MaterialRepository
                 $item->tags()->saveMany($tags);
             });
         }
+    }
+
+    /**
+     * 新增來自Url的素材
+     *
+     * @param  mixed $temporary_id
+     * @return Material
+     */
+    public function createFromUrl($url) : Material
+    {
+        $key = app('snowflake')->id();
+        $title = $key . '-' . Str::limit($url, 23 - strlen($key));
+        $type = MaterialType::Video;
+        $model = Material::createInstance(compact('title', 'type'));
+        ProcessMaterialFromUrl::dispatch($url, $model);
+        return $model;
     }
 
     /**

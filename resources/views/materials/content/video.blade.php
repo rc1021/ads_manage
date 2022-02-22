@@ -5,9 +5,9 @@
         <div class="inline-block py-2 min-w-full sm:px-6 lg:px-8 gap-2">
             <div class="max-w-screen-lg flex flex-wrap gap-2 p-1 pt-1.5">
                 @foreach ($items as $item)
-                <a href="#" class="group relative shadow bg-gray-100/100 bg-stripes bg-stripes-white px-2">
+                <a href="#" class="block group relative shadow bg-gray-200 bg-stripes bg-stripes-white min-w-[11rem]">
                     @if($item->mediaable->converted_for_thumbing_at)
-                    <img class="object-contain max-h-44 h-44" src="{{ $item->mediaable->thumbnail_url }}" />
+                    <img class="object-contain max-h-44 h-44 mx-auto" src="{{ $item->mediaable->thumbnail_url }}" />
                     @else
                     <div class="grid max-h-44 h-44 w-44 text-center place-content-center">
                         <div>
@@ -18,7 +18,7 @@
                         </div>
                     </div>
                     @endif
-                    <div class="absolute z-10 flex justify-between justify-items-end items-end top-0 left-2 right-2 h-full text-sm bg-no-repeat"
+                    <div class="absolute z-10 flex justify-between justify-items-end items-end top-0 inset-x-0 h-full text-sm bg-no-repeat"
                         data-rel="vtt-background"
                         data-vtt-background="{{ json_encode($item->mediaable->public_thumbnail_vtt_parse) }}">
                         <div class="flex p-1">
@@ -28,26 +28,23 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100">
-                            <button x-on:click.prevent="edit({{ $item->toJson() }})" type="button" class="rounded-lg p-1 px-1.5 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-700 border border-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-slate-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="transition-all p-1 invisible opacity-0 group-hover:visible group-hover:opacity-100">
+                            <button x-on:click.prevent="edit({{ $item->toJson() }})" type="button" title="{{ __('Edit') }}" class="p-1 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-slate-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                {{ __('Edit') }}
                             </button>
                             @if(request()->input('tid') < 0)
-                            <button x-on:click.prevent="restore({{ $item->toJson() }})" type="button" data-modal-toggle="defaultModal" class="rounded-lg p-1 px-1.5 bg-white hover:bg-red-100 text-red-500 hover:text-red-700 border border-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-red-600 hover:stroke-red-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <button x-on:click.prevent="restore({{ $item->toJson() }})" type="button" title="{{ __('Restore') }}" class="p-1 rounded-full bg-white hover:bg-red-100 text-red-500 hover:text-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-red-600 hover:stroke-red-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                 </svg>
-                                {{ __('Restore') }}
                             </button>
                             @else
-                            <button x-on:click.prevent="drop({{ $item->toJson() }})" type="button" data-modal-toggle="defaultModal" class="rounded-lg p-1 px-1.5 bg-white hover:bg-red-100 text-red-500 hover:text-red-700 border border-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-red-600 hover:stroke-red-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <button x-on:click.prevent="drop({{ $item->toJson() }})" type="button" title="{{ __('Delete') }}" class="p-1 rounded-full bg-white hover:bg-red-100 text-red-500 hover:text-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-red-600 hover:stroke-red-700 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
-                                {{ __('Delete') }}
                             </button>
                             @endif
                         </div>

@@ -80,6 +80,7 @@
 <script>
     function materials_form_item () {
         return {
+            videotype: 'fileupload',
             foo: '',
             type: 1, // 新增類型
             modal: false,

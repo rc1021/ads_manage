@@ -15,6 +15,7 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.7",
+        "mpratt/embera": "^2.0",
         "pbmedia/laravel-ffmpeg": "^7.8",
         "podlove/webvtt-parser": "^1.1",
         "predis/predis": "^1.1"

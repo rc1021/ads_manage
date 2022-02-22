@@ -850,6 +850,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   min-width: -moz-fit-content;
   min-width: fit-content;
 }
+.min-w-\[11rem\] {
+  min-width: 11rem;
+}
 .max-w-2xl {
   max-width: 42rem;
 }
