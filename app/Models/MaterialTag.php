@@ -41,6 +41,6 @@ class MaterialTag extends Model
      */
     public static function GetGroupByParentID() : Collection
     {
-        return self::get()->groupBy('parent_id');
+        return self::get()->groupBy('folder_id');
     }
 }
