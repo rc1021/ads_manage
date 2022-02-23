@@ -2124,17 +2124,17 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function FileCreator(file, dataset) {
   var accept = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -2206,16 +2206,34 @@ FileCreator.prototype.isValidate = function () {
   } // 檢查 type
 
 
-  if (typeof this._accept != 'string') this._accept = '*/*';
+  if (this._accept && this._accept != '*/*') {
+    var flag = false;
 
-  var accept = this._accept.split('/');
+    var mimetype = this._file.type.split('/');
 
-  if (typeof accept[0] == 'undefined' || accept[0] == '*') accept[0] = '.*';
-  if (typeof accept[1] == 'undefined' || accept[1] == '*') accept[1] = '.*';
+    var _iterator = _createForOfIteratorHelper(this._accept.split(',')),
+        _step;
 
-  if (!this._file.type.match(accept.join('/'))) {
-    this.throwException(this.get('name') + ': type is not accepted.');
-    return false;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var accept = _step.value;
+        if (flag) break;
+        accept = accept.split('/');
+
+        if (mimetype[0] == accept[0]) {
+          flag = accept[1] == '*' || mimetype[1] == accept[1];
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    if (!flag) {
+      this.throwException(this.get('name') + ': type is not accepted.');
+      return false;
+    }
   } // 檢查 size
 
 
@@ -2264,7 +2282,7 @@ FileCreator.prototype.upload = function () {
         message += "\n-- " + element;
       });
     }
-    self.throwException(message, 'worring');
+    self.throwException(message, 'error');
   });
 };
 
@@ -2288,12 +2306,12 @@ FileCreator.prototype.throwException = function (message) {
     // 點擊移除
     this._visualization.addEventListener("click", function (ev) {
       ev.target.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
-    }); // 3.5 秒自動移除
+    }); // 7 秒自動移除
 
 
     setTimeout(function () {
       if (self._visualization) self._visualization.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
-    }, 3.5 * 1000);
+    }, 7 * 1000);
   }
 
   ;
@@ -2479,18 +2497,18 @@ function dropPartUpload(item) {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-  var _iterator = _createForOfIteratorHelper(document.querySelectorAll('[data-rel="drop-uploader"]')),
-      _step;
+  var _iterator2 = _createForOfIteratorHelper(document.querySelectorAll('[data-rel="drop-uploader"]')),
+      _step2;
 
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var item = _step.value;
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var item = _step2.value;
       dropPartUpload(item);
     }
   } catch (err) {
-    _iterator.e(err);
+    _iterator2.e(err);
   } finally {
-    _iterator.f();
+    _iterator2.f();
   }
 });
 

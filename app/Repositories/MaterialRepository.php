@@ -10,11 +10,16 @@ use App\Models\Image;
 use App\Models\Material;
 use App\Models\MaterialTag;
 use App\Models\Video;
+use App\Rules\MaterialImageRule;
+use App\Rules\MaterialVideoRule;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\File\File;
 
 class MaterialRepository
 {
@@ -24,23 +29,99 @@ class MaterialRepository
      * @param  mixed $blob
      * @return void
      */
-    public function save_to_temp($blob)
+    public function upload_temp($blob)
     {
         $data = collect(request()->all())->only(['id', 'index', 'total'])->toArray();
         $temp_dir = Material::DirectoryTemporary . $data['id'];
         $number = strlen(floor($data['total'])); // 取得 total 有幾位數
         $blob->storeAs($temp_dir, 'tmp.'.str_pad($data['index'], $number, "0", STR_PAD_LEFT));
-        // 所有 part 上傳完成
+        // 所有 part 上傳完成, 要驗證格式是否允許上傳
         if(count(Storage::files($temp_dir)) == $data['total'])
-            MaterialUploadCombiner::dispatch($data['id']);
+        {
+            MaterialUploadCombiner::dispatchSync($data['id']);
+            $this->validate_temp($data['id']);
+        }
+        return null;
+    }
+
+    /**
+     * 驗證上傳內容
+     *
+     * @param  mixed $temporary_id
+     * @return void
+     */
+    public function validate_temp($temporary_id)
+    {
+        $data = Cache::get($temporary_id);
+        $storage = Storage::disk(data_get($data, 'metadata.disk', config('filesystems.default')));
+        $file = new File($storage->path(data_get($data, 'metadata.path')));
+        $mime_type = Str::of(data_get($data, 'metadata.mime_type'))->lower();
+
+        // image
+        if(Str::startsWith($mime_type, Str::of(MaterialType::getKey(MaterialType::Image))->lower()))
+        {
+            Validator::make(compact('file'), [
+                'file' => [
+                    'bail',
+                    'required',
+                    'mimes:jpg,gif,png',
+                    sprintf('max:%s', 5 * 1024), // KB, max: 5MB
+                    new MaterialImageRule,
+                ],
+            ])->after(function ($validator) {
+                if($validator->errors()->any())
+                    $this->clear_temporary();
+            })->validate();
+        }
+        // video
+        elseif(Str::startsWith($mime_type, Str::of(MaterialType::getKey(MaterialType::Video))->lower()))
+        {
+            Validator::make(compact('file'), [
+                'file' => [
+                    'bail',
+                    'required',
+                    'mimetypes:video/avi,video/mpeg,video/quicktime,video/mp4',
+                    sprintf('max:%s', 4 * 1024 * 1024), // KB, max: 4GB
+                    new MaterialVideoRule,
+                ],
+            ])->after(function ($validator) {
+                if($validator->errors()->any())
+                    $this->clear_temporary();
+            })->validate();
+        }
+    }
+
+    /**
+     * 移除 temporary 的快取、暫存檔案
+     *
+     * @return void
+     */
+    public function clear_temporary($temporary_id = null)
+    {
+        $temporary_id = $temporary_id ?: request()->input('id');
+        $data = Cache::get($temporary_id);
+        if(!$data)
+            return ;
+
+        // 取得額外資訊
+        $metadata = data_get($data, 'metadata', []);
+        $storage = Storage::disk($metadata['disk']);
+        // 刪除合併檔
+        if($storage->exists($metadata['path']))
+            $storage->delete($metadata['path']);
+        // 刪除暫存
+        Storage::deleteDirectory(Material::DirectoryTemporary . $temporary_id);
+        // 刪除快取
+        Cache::forget($temporary_id);
     }
 
     /**
      * 批次建立素材(自動重新命名)
      *
-     * @param  mixed $data
+     * @param  mixed $input
+     * @return array
      */
-    public function batchCreate(array $input)
+    public function batchCreate(array $input) : array
     {
         $input = collect($input ?: request()->all());
         $models = collect([]);
@@ -50,22 +131,20 @@ class MaterialRepository
             foreach ($items as $key => $value) {
                 $models->push(Material::createInstance([
                     'title' => $value,
-                    'type' => MaterialType::Text,
+                    'type' => "".MaterialType::Text,
                 ]));
             }
         }
-        else {
-            // temporary
-            if($input->has('temporaries') && count($items = array_filter($input->get('temporaries', []))) > 0) {
-                foreach ($items as $key => $value) {
-                    $models->push($this->createFromTemporaryID($value));
-                }
+        // temporary
+        if($input->has('temporaries') && count($items = array_filter($input->get('temporaries', []))) > 0) {
+            foreach ($items as $key => $value) {
+                $models->push($this->createFromTemporaryID($value));
             }
-            // urls
-            if($input->has('urls') && count($urls = array_filter(explode(PHP_EOL, $input->get('urls', '')))) > 0) {
-                foreach ($urls as $key => $value) {
-                    $models->push($this->createFromUrl($value));
-                }
+        }
+        // urls
+        if($input->has('urls') && count($urls = array_filter(explode(PHP_EOL, $input->get('urls', '')))) > 0) {
+            foreach ($urls as $key => $value) {
+                $models->push($this->createFromUrl($value));
             }
         }
 
@@ -86,6 +165,8 @@ class MaterialRepository
                 $item->tags()->saveMany($tags);
             });
         }
+
+        return $models->all();
     }
 
     /**
@@ -98,7 +179,7 @@ class MaterialRepository
     {
         $key = app('snowflake')->id();
         $title = $key . '-' . Str::limit($url, 23 - strlen($key));
-        $type = MaterialType::Video;
+        $type = "".MaterialType::Video;
         $model = Material::createInstance(compact('title', 'type'));
         ProcessMaterialFromUrl::dispatch($url, $model);
         return $model;
@@ -118,7 +199,9 @@ class MaterialRepository
         $input = Cache::get($temporary_id);
         $metadata = data_get($input, 'metadata', []);
         $title = data_get($metadata, 'name', $temporary_id);
-        $type = data_get($input, 'type', MaterialType::Text);
+        $mime_type = data_get($metadata, 'mime_type');
+        $arr = explode('/', $metadata['mime_type']);
+        $type = "".MaterialType::getValue(array_shift($arr));
         $model = Material::createInstance(compact('title', 'type'));
         ProcessMaterialTemporary::dispatch($temporary_id, $model);
         return $model;

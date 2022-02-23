@@ -63,16 +63,21 @@ FileCreator.prototype.isValidate = function ()
         return false;
     }
     // 檢查 type
-    if(typeof(this._accept) != 'string')
-        this._accept = '*/*';
-    let accept = this._accept.split('/');
-    if(typeof(accept[0]) == 'undefined' || accept[0] == '*')
-        accept[0] = '.*';
-    if(typeof(accept[1]) == 'undefined' || accept[1] == '*')
-        accept[1] = '.*';
-    if(!this._file.type.match(accept.join('/'))) {
-        this.throwException(this.get('name') + ': type is not accepted.');
-        return false;
+    if(this._accept && this._accept != '*/*') {
+        let flag = false;
+        let mimetype = this._file.type.split('/');
+        for(let accept of this._accept.split(',')) {
+            if(flag)
+                break;
+            accept = accept.split('/');
+            if(mimetype[0] == accept[0]) {
+                flag = accept[1] == '*' || mimetype[1] == accept[1];
+            }
+        }
+        if(!flag) {
+            this.throwException(this.get('name') + ': type is not accepted.');
+            return false;
+        }
     }
     // 檢查 size
     if(this.get('size') > this._dataset.sizeLimit) {
@@ -124,7 +129,7 @@ FileCreator.prototype.upload = function (closure = null)
                 error.response.data.errors[key].forEach(element => {
                     message += "\n-- " + element;
                 });
-        self.throwException(message, 'worring');
+        self.throwException(message, 'error');
     });
 }
 
@@ -147,11 +152,11 @@ FileCreator.prototype.throwException = function (message, type = 'error')
         this._visualization.addEventListener("click", function (ev) {
             ev.target.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
         });
-        // 3.5 秒自動移除
+        // 7 秒自動移除
         setTimeout(function () {
             if(self._visualization)
                 self._visualization.dispatchEvent(new CustomEvent('fadeoutAndRemove'));
-        }, 3.5 * 1000)
+        }, 7 * 1000)
     };
     console.error(message);
 }

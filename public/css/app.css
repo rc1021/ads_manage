@@ -589,6 +589,12 @@ Ensure the default browser behavior of the `hidden` attribute.
 .z-50 {
   z-index: 50;
 }
+.m-0 {
+  margin: 0px;
+}
+.-m-0 {
+  margin: -0px;
+}
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -684,6 +690,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .mr-auto {
   margin-right: auto;
+}
+.-mb-1 {
+  margin-bottom: -0.25rem;
 }
 .block {
   display: block;
@@ -797,6 +806,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   min-height: -webkit-max-content;
   min-height: -moz-max-content;
   min-height: max-content;
+}
+.min-h-\[\] {
+  min-height: ;
+}
+.min-h-\[10rem\] {
+  min-height: 10rem;
 }
 .w-5 {
   width: 1.25rem;
@@ -950,6 +965,12 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .cursor-default {
   cursor: default;
+}
+.cursor-none {
+  cursor: none;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 .list-disc {
   list-style-type: disc;
@@ -1259,6 +1280,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-bg-opacity: 1;
   background-color: rgb(75 85 99 / var(--tw-bg-opacity));
 }
+.bg-red-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 202 202 / var(--tw-bg-opacity));
+}
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -1329,6 +1354,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .stroke-red-500 {
   stroke: #ef4444;
 }
+.stroke-gray-600 {
+  stroke: #4b5563;
+}
 .object-contain {
   -o-object-fit: contain;
      object-fit: contain;
@@ -1357,6 +1385,12 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .p-4 {
   padding: 1rem;
+}
+.p-0\.5 {
+  padding: 0.125rem;
+}
+.p-0 {
+  padding: 0px;
 }
 .py-1 {
   padding-top: 0.25rem;
@@ -1619,6 +1653,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-gray-300 {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+.text-red-400 {
+  --tw-text-opacity: 1;
+  color: rgb(248 113 113 / var(--tw-text-opacity));
 }
 .underline {
   -webkit-text-decoration-line: underline;
@@ -2016,6 +2054,15 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
 }
+.disabled\:cursor-none:disabled {
+  cursor: none;
+}
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+.disabled\:opacity-75:disabled {
+  opacity: 0.75;
+}
 .group:hover .group-hover\:visible {
   visibility: visible;
 }
@@ -2030,6 +2077,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .group:hover .group-hover\:stroke-main-600 {
   stroke: #e11d48;
+}
+.group:hover .group-hover\:stroke-main-500 {
+  stroke: #f43f5e;
 }
 .group:hover .group-hover\:text-white {
   --tw-text-opacity: 1;

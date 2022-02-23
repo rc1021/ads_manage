@@ -22,7 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    App\Models\Image::find(334901028224761856)->material;
     return view('welcome');
 });
 

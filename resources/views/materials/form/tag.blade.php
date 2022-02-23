@@ -34,7 +34,6 @@
                         <div class="relative w-full group">
                             <label for="parent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">{{ __('Folder Tag') }}</label>
                             <select name="folder_id" id="parent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-main-500 dark:focus:border-main-500">
-                                <option value="0">--</option>
                                 @foreach ($tag_parents as $parent)
                                 <option value="{{ $parent->id }}">{{ $parent->name }}</option>
                                 @endforeach
@@ -61,7 +60,7 @@
         return {
             type: 1, // 新增類型
             modal: false,
-            texts: {!! json_encode(old('texts', [null]), JSON_UNESCAPED_UNICODE) !!},
+            texts: [null],
             add_text() {
                 this.texts.push(null);
             }

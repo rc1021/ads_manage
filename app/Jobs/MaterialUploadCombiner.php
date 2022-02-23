@@ -51,7 +51,8 @@ class MaterialUploadCombiner implements ShouldQueue
         $metadata = data_get($data, 'metadata', []);
 
         // 取得暫存位置
-        $storage = Storage::disk(config('filesystems.default'));
+        $metadata['disk'] = config('filesystems.default');
+        $storage = Storage::disk($metadata['disk']);
         $temp_files = $storage->files(Material::DirectoryTemporary . $this->temporary_id);
         sort($temp_files);
         $first_part = array_shift($temp_files);
@@ -72,7 +73,9 @@ class MaterialUploadCombiner implements ShouldQueue
         Cache::put($this->temporary_id, $data);
 
         // 建立 model for material, and image(or video etc...)
-        $done_for_method = 'handleForType'.MaterialType::getKey(data_get($data, 'type'));
+        $arr = explode('/', $metadata['mime_type']);
+        $type = array_shift($arr);
+        $done_for_method = 'handleForType'.ucfirst($type);
         if(method_exists($this, $done_for_method))
             $this->{$done_for_method}();
     }

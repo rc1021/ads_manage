@@ -69,12 +69,10 @@ class MaterialController extends Controller
      */
     public function store(Request $request, MaterialRepository $rep)
     {
-        Validator::make($request->all(), [
-            'type' => 'required',
-        ])->validate();
-
         $data = $rep->batchCreate($request->all());
-        session()->flash('success', __('Material successfully created.'));
+        if(count($data) > 0) {
+            session()->flash('success', __('Material successfully created.'));
+        }
         if($request->ajax())
             return response()->json($data);
         return redirect()->route('materials.index');
@@ -100,10 +98,17 @@ class MaterialController extends Controller
                         $fail(__('The temporary id is invalid'));
                 }
             ], // 驗證 temporary id 是否存在
-        ])->validate();
+        ])->after(function ($validator) use ($rep) {
+            if($validator->errors()->any())
+                $rep->clear_temporary();
+        })->validate();
 
-        if ($request->file('data')->isValid())
-            $rep->save_to_temp($request->data);
+        if ($request->file('data')->isValid()) {
+            $result = $rep->upload_temp($request->data);
+            if(!is_null($result)) {
+                // done and ...
+            }
+        }
     }
 
     /**
