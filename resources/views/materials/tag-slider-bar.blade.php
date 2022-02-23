@@ -14,18 +14,18 @@
                     <span class="sr-only">Search</span>
                     <input type="text" onmouseenter="this.focus(); this.select();" x-model="search" name="search" autocomplete="off" class="block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-main-500 focus:ring-main-500 focus:ring-1 sm:text-sm" placeholder="Search for tag...">
                 </label>
-                <div class="bg-white flex space-x-2 px-4 items-center text-base font-semibold text-slate-900 dark:text-slate-200">
+                <div class="bg-white flex space-x-2 px-4 items-center text-base font-semibold text-slate-900">
                         <a href="{{ route('materials.index', array_merge($query, ['act' => 'tag-edit'])) }}" class="">
                             <span>管理標籤</span>
                         </a>
                         @if($act == 'tag-edit')
                         <div class="text-sm items-center flex">
-                            <a x-on:click.prevent="create_folder" href="#" title="{{ __('新增資料夾') }}" class="inline-flex ml-1 text-main-700 bg-main-100 hover:bg-main-200 rounded-full dark:bg-main-200 dark:text-main-700">
+                            <a x-on:click.prevent="create_folder" href="#" title="{{ __('新增資料夾') }}" class="inline-flex ml-1 text-main-700 bg-main-100 hover:bg-main-200 rounded-full ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
                             </a>
-                            <a href="{{ route('materials.index', array_merge($query, ['act' => ''])) }}" title="{{ __('完成編輯') }}" class="inline-flex ml-2 text-main-700 bg-main-100 hover:bg-main-200 rounded-full dark:bg-main-200 dark:text-main-700">
+                            <a href="{{ route('materials.index', array_merge($query, ['act' => ''])) }}" title="{{ __('完成編輯') }}" class="inline-flex ml-2 text-main-700 bg-main-100 hover:bg-main-200 rounded-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
@@ -35,19 +35,19 @@
                 </div>
                 <hr>
             </div>
-            <div class="h-8 bg-gradient-to-b from-white dark:from-slate-900"></div>
+            <div class="h-8 bg-gradient-to-b from-white"></div>
         </div>
         <ul class="space-y-3 px-4">
             <li>
                 <a href="{{ route('materials.index', $tmp_query) }}" class="block">
-                    <h2 class="text-base font-semibold text-slate-900 hover:text-main-400 dark:text-slate-200 flex items-center space-x-1 {{ ($tag_id > 0 || $is_trashed) ?: 'text-main-400' }}">
+                    <h2 class="text-base font-semibold text-slate-900 hover:text-main-400 flex items-center space-x-1 {{ ($tag_id > 0 || $is_trashed) ?: 'text-main-400' }}">
                         {{ __('All Materials') }}
                     </h2>
                 </a>
             </li>
             @foreach ($tag_parents as $parent)
             <li class="flex flex-col">
-                <a href="#" class="block text-slate-900 dark:text-slate-200">
+                <a href="#" class="block text-slate-900">
                     <h2 class="text-base font-semibold group flex items-center">
                         {{ $parent->name }}
                     </h2>
@@ -97,7 +97,7 @@
                     </li>
                     @endforeach
                     @if(count($tags->get($parent->id)) > 5 || ($act == 'tag-edit' && count($tags->get($parent->id)) > 3))
-                    <div class="h-6 bg-gradient-to-t from-white dark:from-slate-900 sticky bottom-0 -ml-5 pointer-events-none"></div>
+                    <div class="h-6 bg-gradient-to-t from-white sticky bottom-0 -ml-5 pointer-events-none"></div>
                     @endif
                 </ul>
                 @else
@@ -106,7 +106,7 @@
             </li>
             @endforeach
             <li>
-                <a href="{{ route('materials.index', array_merge($query, ['tid' => -1])) }}" class="block text-slate-900 hover:text-main-400 dark:text-slate-200 {{ request()->input('tid') == -1 ? 'text-main-400' : '' }}">
+                <a href="{{ route('materials.index', array_merge($query, ['tid' => -1])) }}" class="block text-slate-900 hover:text-main-400 {{ request()->input('tid') == -1 ? 'text-main-400' : '' }}">
                     <h2 class="text-base font-semibold flex items-center space-x-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -180,8 +180,8 @@
                                 {{ __('New Folder') }}
                             </h3>
                             <div class="relative z-0 mb-6 w-full group">
-                                <input id="name" name="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-main-500 focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
-                                <label for="name" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-focus:dark:text-main-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Folder Name') }}</label>
+                                <input id="name" name="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
+                                <label for="name" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Folder Name') }}</label>
                             </div>
                         </div>
                     </div>
@@ -219,8 +219,8 @@
                                 {{ __('update folder') }}
                             </h3>
                             <div class="relative z-0 mb-6 w-full group">
-                                <input x-model="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-main-500 focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
-                                <label for="name" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-focus:dark:text-main-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Folder Name') }}</label>
+                                <input x-model="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
+                                <label for="name" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Folder Name') }}</label>
                             </div>
                         </div>
                     </div>
@@ -259,12 +259,12 @@
                             </h3>
                             <div class="relative z-0 mb-6 w-full group">
                                 <input x-model="folder_id" type="hidden" name="folder_id" />
-                                <input x-model="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-main-500 focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
-                                <label for="name" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-focus:dark:text-main-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Tag Name') }}</label>
+                                <input x-model="name" autocomplete="off" type="text" name="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-main-600 peer" placeholder=" " required />
+                                <label for="name" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-main-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{ __('Tag Name') }}</label>
                             </div>
                             <div class="relative w-full group">
-                                <label for="parent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">{{ __('Folder Name') }}</label>
-                                <select x-model="folder_id" name="folder_id" id="parent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-main-500 dark:focus:border-main-500">
+                                <label for="parent" class="block mb-2 text-sm font-medium text-gray-900">{{ __('Folder Name') }}</label>
+                                <select x-model="folder_id" name="folder_id" id="parent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5">
                                     <option value="0">--</option>
                                     @foreach ($tag_parents as $parent)
                                     <option value="{{ $parent->id }}">{{ $parent->name }}</option>
