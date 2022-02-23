@@ -14,7 +14,7 @@ class MaterialInstall extends Command
      */
     protected $signature = 'material:install
         {--relative : Create the symbolic link using relative paths}
-        {--force : Recreate existing symbolic links}';
+        {--force : Recreate existing symbolic links and Directories}';
 
     /**
      * The console command description.
@@ -61,7 +61,8 @@ class MaterialInstall extends Command
     protected function initMaterialDirectory()
     {
         $this->directory = storage_path('app/materials');
-
+        if($this->option('force'))
+            $this->deleteDir('/');
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
 
@@ -80,6 +81,8 @@ class MaterialInstall extends Command
         $this->makeDir('/thumnail');
         $this->line('<info>Material directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
+        if($this->option('force'))
+            $this->deleteDir('/materials', storage_path('app/public'));
         $this->makeDir('/', storage_path('app/public/materials'));
         $links = [
             storage_path('app/public/materials/streamable') => storage_path('app/materials/streamable'),
@@ -118,5 +121,12 @@ class MaterialInstall extends Command
         if(is_null($root))
             $root = $this->directory;
         $this->laravel['files']->makeDirectory("{$root}/$path", 0755, true, true);
+    }
+
+    protected function deleteDir($path = '', $root = null)
+    {
+        if(is_null($root))
+            $root = $this->directory;
+        $this->laravel['files']->deleteDirectory("{$root}/$path");
     }
 }

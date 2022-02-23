@@ -19,7 +19,19 @@ use App\Http\Controllers\VideoController;
 use App\Models\Material;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+
+if(config('app.debug')) {
+    Route::get('/init', function () {
+        Artisan::call('modelCache:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('material:install', ['--force' => true]);
+        sleep(3);
+        session()->flash('info', __('系統已重置'));
+        return redirect()->route('materials.index');
+    })->name('init');
+}
 
 Route::get('/', function () {
     return view('welcome');

@@ -1,4 +1,27 @@
-<div class="flex space-x-4 mt-4">
+<div x-data="{
+    reset: false,
+    to_reset() {
+        if(confirm('確定是否將系統重置?')) {
+            this.reset = true;
+            window.location.href = '{{ route('init') }}';
+        }
+    }
+}" class="flex space-x-4 mt-4">
+    @if(config('app.debug'))
+    <div>
+        <button x-on:click.prevent="to_reset" class="group block max-w-xs rounded-lg p-3 py-2 bg-white ring-1 ring-slate-900/5 shadow space-y-3 hover:bg-main-500">
+            <div class="flex items-center space-x-1">
+                <svg x-show="!reset" class="h-5 w-5 stroke-main-500 group-hover:stroke-white" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <svg x-show="reset" style="display: none;" class="animate-spin h-5 w-5 stroke-main-500 group-hover:stroke-white" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <h3 class="hidden lg:inline-block text-sm text-slate-900 font-semibold group-hover:text-white">{{ __('重置') }}</h3>
+            </div>
+        </button>
+    </div>
+    @endif
     {{-- 新增素材按鈕 --}}
     @include('materials.form.item')
     {{-- 新增標籤按鈕 --}}

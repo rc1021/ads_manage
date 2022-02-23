@@ -509,6 +509,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   bottom: 0.25rem;
   left: 0.25rem;
 }
+.inset-2 {
+  top: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.5rem;
+}
 .inset-y-0 {
   top: 0px;
   bottom: 0px;
@@ -571,6 +577,12 @@ Ensure the default browser behavior of the `hidden` attribute.
 .-bottom-8 {
   bottom: -2rem;
 }
+.bottom-2 {
+  bottom: 0.5rem;
+}
+.top-2 {
+  top: 0.5rem;
+}
 .z-30 {
   z-index: 30;
 }
@@ -594,6 +606,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .-m-0 {
   margin: -0px;
+}
+.m-2 {
+  margin: 0.5rem;
 }
 .mx-auto {
   margin-left: auto;
@@ -959,6 +974,22 @@ Ensure the default browser behavior of the `hidden` attribute.
 .animate-bounce {
   -webkit-animation: bounce 1s infinite;
           animation: bounce 1s infinite;
+}
+@-webkit-keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  -webkit-animation: spin 1s linear infinite;
+          animation: spin 1s linear infinite;
 }
 .cursor-pointer {
   cursor: pointer;
@@ -1672,6 +1703,12 @@ Ensure the default browser behavior of the `hidden` attribute.
 .opacity-50 {
   opacity: 0.5;
 }
+.opacity-25 {
+  opacity: 0.25;
+}
+.opacity-75 {
+  opacity: 0.75;
+}
 .shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
@@ -1934,6 +1971,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-bg-opacity: 1;
   background-color: rgb(254 205 211 / var(--tw-bg-opacity));
 }
+.hover\:bg-main-400:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 113 133 / var(--tw-bg-opacity));
+}
 .hover\:stroke-red-700:hover {
   stroke: #b91c1c;
 }
@@ -1975,6 +2016,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .hover\:text-gray-400:hover {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+.hover\:opacity-100:hover {
+  opacity: 1;
 }
 .hover\:ring-main-500:hover {
   --tw-ring-opacity: 1;
