@@ -1,0 +1,68 @@
+{
+    "name": "target-convert/material",
+    "type": "library",
+    "authors": [
+        {
+            "name": "許益銘",
+            "email": "rc.701021@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.3|^8.0",
+        "genealabs/laravel-model-caching": "^0.11.0",
+        "godruoyi/php-snowflake": "^2.0",
+        "intervention/image": "^2.7",
+        "james-heinrich/getid3": "^1.9",
+        "mpratt/embera": "^2.0",
+        "pbmedia/laravel-ffmpeg": "^7.8",
+        "podlove/webvtt-parser": "^1.1",
+        "predis/predis": "^1.1",
+        "laravel/framework": ">=5.5",
+        "doctrine/dbal": "2.*|3.*"
+    },
+    "require-dev": {
+        "laravel/laravel": ">=5.5",
+        "fzaninotto/faker": "~1.4",
+        "intervention/image": "~2.3",
+        "laravel/browser-kit-testing": "^6.0",
+        "spatie/phpunit-watcher": "^1.22.0",
+        "facade/ignition": "^2.5",
+        "fakerphp/faker": "^1.9.1",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^5.10",
+        "phpunit/phpunit": "^9.5.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "TargetConvert\\Material\\": "src/",
+            "TargetConvert\\Material\\Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+        },
+        "classmap": [
+        ]
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit"
+    },
+    "suggest": {
+        "intervention/image": "Required to handling and manipulation upload images (~2.3).",
+        "spatie/eloquent-sortable": "Required to built orderable gird."
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TargetConvert\\Material\\TargetConvertMaterialServiceProvider"
+            ],
+            "aliases": {
+                "Material": "TargetConvert\\Material\\Facades\\Material"
+            }
+        }
+    }
+}
