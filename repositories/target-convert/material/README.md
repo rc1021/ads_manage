@@ -4,6 +4,23 @@
 
 首先確保 `Laravel` 已安裝，並且設定正確的資料庫連線。
 
+在 `composer.json` 加入擴展包位置的資訊，假設擴展包位置在相對路徑的 `./repositories/target-convert/material`，那麼資訊應該如下
+
+```
+{
+    // ...
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./repositories/target-convert/material"
+        }
+    ],
+    // ...(其餘略)
+}
+```
+
+接著安裝擴展包
+
 ```
 composer require target-convert/material
 ```
