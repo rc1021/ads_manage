@@ -5,7 +5,7 @@
             <svg class="h-5 w-5 stroke-main-500 group-hover:stroke-white" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
             </svg>
-            <h3 class="hidden lg:inline-block text-sm text-slate-900 font-semibold group-hover:text-white">{{ __('New Material') }}</h3>
+            <h3 class="hidden lg:inline-block text-sm text-slate-900 font-semibold group-hover:text-white">{{ __('+文案/素材') }}</h3>
         </div>
     </a>
     <!-- Modal -->
@@ -25,7 +25,7 @@
                             </div>
                             <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left space-y-4">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                    {{ __('add new material') }}
+                                    {{ __('+文案/素材') }}
                                 </h3>
                                 {{-- items --}}
                                 <div class="bg-white flex">

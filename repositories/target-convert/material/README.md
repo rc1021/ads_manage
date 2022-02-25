@@ -5,7 +5,7 @@
 首先確保 `Laravel` 已安裝，並且設定正確的資料庫連線。
 
 ```
-php composer require target-convert/material
+composer require target-convert/material
 ```
 
 然後執行下列命令來發佈資源檔案

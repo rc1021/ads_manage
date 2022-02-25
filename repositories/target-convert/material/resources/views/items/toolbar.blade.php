@@ -1,7 +1,7 @@
 <div x-data="{
     reset: false,
     to_reset() {
-        if(confirm('確定是否將系統重置?')) {
+        if(confirm('確定是否將系統資料清空?')) {
             this.reset = true;
             window.location.href = '{{ route('material.init') }}';
         }
@@ -17,7 +17,7 @@
                 <svg x-show="reset" style="display: none;" class="animate-spin h-5 w-5 stroke-main-500 group-hover:stroke-white" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <h3 class="hidden lg:inline-block text-sm text-slate-900 font-semibold group-hover:text-white">{{ __('重置') }}</h3>
+                <h3 class="hidden lg:inline-block text-sm text-slate-900 font-semibold group-hover:text-white">{{ __('清空') }}</h3>
             </div>
         </button>
     </div>
