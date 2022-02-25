@@ -15,3 +15,5 @@ yarn-error.log
 /.vscode
 /worker.log
 /storage/debugbar/*
+/storage/app/materials/*
+/storage/app/public/materials/*

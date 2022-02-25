@@ -38,7 +38,7 @@ class Material
                         Artisan::call('route:clear');
                         Artisan::call('view:clear');
                         Artisan::call('material:install', ['--force' => true]);
-                        material_toastr(__('系統已重置'), 'info');
+                        material_info(__('系統已重置'));
                         return redirect()->route('material.items.index');
                     })->name('init');
                 }
@@ -48,25 +48,27 @@ class Material
                 })->name('index');
 
                 // 唯一 ID 產生器
-                $router->post('snowflake', "Controller@snowflake")->name('snowflake.store');
+                $router->post('snowflake', "MaterialController@snowflake")->name('snowflake.store');
 
                 // folders
-                $router->post('tag/folders', "Controller@folder_store")->name('tag.folders.store');
-                $router->put('tag/folders/{folder}', "Controller@folder_update")->name('tag.folders.update');
-                $router->delete('tag/folders/{folder}', "Controller@folder_destroy")->name('tag.folders.destroy');
+                $router->post('tag/folders', "MaterialController@folder_store")->name('tag.folders.store');
+                $router->put('tag/folders/{folder}', "MaterialController@folder_update")->name('tag.folders.update');
+                $router->delete('tag/folders/{folder}', "MaterialController@folder_destroy")->name('tag.folders.destroy');
 
                 // tas
-                $router->post('tags', "Controller@tag_store")->name('tags.store');
-                $router->put('tags/{tag}', "Controller@tag_update")->name('tags.update');
-                $router->delete('tags/{tag}', "Controller@tag_destroy")->name('tags.destroy');
+                $router->post('tags', "MaterialController@tag_store")->name('tags.store');
+                $router->put('tags/{tag}', "MaterialController@tag_update")->name('tags.update');
+                $router->delete('tags/{tag}', "MaterialController@tag_destroy")->name('tags.destroy');
 
                 // items
-                $router->post('items/upload', "Controller@item_upload")->name('items.upload');
-                $router->put('items/restore/{item}', "Controller@item_restore")->withTrashed()->name('items.restore');
-                $router->get('items', "Controller@item_index")->name('items.index');
-                $router->post('items', "Controller@item_store")->name('items.store');
-                $router->put('items/{item}', "Controller@item_update")->name('items.update');
-                $router->delete('items/{item}', "Controller@item_destroy")->name('items.destroy');
+                $router->post('items/upload', "MaterialController@item_upload")->name('items.upload');
+                $router->put('items/restore/{item}', function ($item) {
+                    return $item;
+                })->name('items.restore');
+                $router->get('items', "MaterialController@item_index")->name('items.index');
+                $router->post('items', "MaterialController@item_store")->name('items.store');
+                $router->put('items/{item}', "MaterialController@item_update")->name('items.update');
+                $router->delete('items/{item}', "MaterialController@item_destroy")->name('items.destroy');
 
                 // $router->get('videos/redo/{video}', 'VideoController@redo')->name('videos.redo');
                 // $router->get('videos/secret/{key}', function ($key) { return Storage::disk(config('filesystems.default'))->download(ModelsMaterial::DirectorySecret . $key); })->name('videos.secret');

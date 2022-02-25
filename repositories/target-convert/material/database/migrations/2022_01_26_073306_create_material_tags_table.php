@@ -15,13 +15,12 @@ class CreateMaterialTagsTable extends Migration
     {
         Schema::create('material_tags', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('parent_id')->default(0);
-            $table->string('name')->unique();
-            $table->boolean('drop')->default(true);
+            $table->bigInteger('folder_id')->default(0);
+            $table->string('name');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('parent_id');
+            $table->unique(['folder_id', 'name']);
         });
     }
 

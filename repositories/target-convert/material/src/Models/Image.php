@@ -5,7 +5,6 @@ namespace TargetConvert\Material\Models;
 use TargetConvert\Material\Jobs\ConvertImageForThumbing;
 use TargetConvert\Material\Traits\HasMediaType;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +12,7 @@ use Throwable;
 
 class Image extends Model
 {
-    use HasFactory, HasMediaType;
+    use HasMediaType;
 
     public function __construct(array $attributes = [])
     {

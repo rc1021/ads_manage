@@ -18,6 +18,7 @@
         <div class="lg:pl-[19.5rem] p-6 relative">
             @include('materials::items.breadcrumbs')
             @include('materials::items.toolbar')
+            @include('materials::partials.alerts')
             @include('materials::items.content')
         </div>
     </div>

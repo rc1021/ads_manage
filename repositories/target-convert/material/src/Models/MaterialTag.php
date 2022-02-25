@@ -2,7 +2,6 @@
 
 namespace TargetConvert\Material\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -10,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class MaterialTag extends Model
 {
-    use HasFactory, SoftDeletes, Cachable;
+    use SoftDeletes, Cachable;
 
     public function __construct(array $attributes = [])
     {

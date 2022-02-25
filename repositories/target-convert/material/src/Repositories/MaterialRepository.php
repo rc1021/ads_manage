@@ -38,7 +38,8 @@ class MaterialRepository
         // 所有 part 上傳完成, 要驗證格式是否允許上傳
         if(count(Storage::files($temp_dir)) == $data['total'])
         {
-            MaterialUploadCombiner::dispatchSync($data['id']);
+            $job = new MaterialUploadCombiner($data['id']);
+            $job->handle();
             $this->validate_temp($data['id']);
         }
         return null;

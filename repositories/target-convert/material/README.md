@@ -28,7 +28,7 @@ composer require target-convert/material
 然後執行下列命令來發佈資源檔案
 
 ```
-php artisan vendor:publish --provider="TargetConvert\Material\TargetConvertMaterialServiceProvider"
+php artisan vendor:publish --provider="TargetConvert\Material\TargetConvertMaterialServiceProvider" --force
 ```
 
 在該命令會生成組態文件 `config/material.php`，可以在裡面修改資料表名以及對應的模組(model)，建議都是用默認組態不修改。
@@ -36,7 +36,13 @@ php artisan vendor:publish --provider="TargetConvert\Material\TargetConvertMater
 然後運行下面的命令完成安裝：
 
 ```
-php artisan material:install
+php artisan material:install --force
+```
+
+在 `./routes/web.php` 加入 Material 路由
+
+```
+\TargetConvert\Material\Facades\Material::routes();
 ```
 
 ### 相關文件

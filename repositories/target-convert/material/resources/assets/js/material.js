@@ -2510,6 +2510,14 @@ __webpack_require__(/*! ./drop-uploader */ "./resources/js/drop-uploader.js");
 
 __webpack_require__(/*! ./vtt-background */ "./resources/js/vtt-background.js");
 
+window.addEventListener('load', function () {
+  document.querySelectorAll('[role="alert"]').forEach(function (item) {
+    return setTimeout(function () {
+      item.remove();
+    }, (item.dataset.disappear || 3) * 1000);
+  });
+});
+
 /***/ }),
 
 /***/ "./resources/js/vtt-background.js":

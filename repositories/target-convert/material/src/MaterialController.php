@@ -19,7 +19,7 @@ use TargetConvert\Material\Models\MaterialTag;
 use TargetConvert\Material\Models\MaterialTagFolder;
 use TargetConvert\Material\Repositories\MaterialRepository;
 
-class Controller extends BaseController
+class MaterialController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
@@ -72,7 +72,7 @@ class Controller extends BaseController
     {
         $data = $rep->batchCreate($request->all());
         if(count($data) > 0) {
-            material_toastr(__('Material successfully created.'));
+            material_success(__('Material successfully created.'));
         }
         if($request->ajax())
             return response()->json($data);
@@ -111,21 +111,21 @@ class Controller extends BaseController
             'title' => 'required|unique:materials,title,'.$item->id.',id',
         ])->validate();
         $rep->update($item, $request->all());
-        material_toastr(__('Material successfully updated.'));
+        material_success(__('Material successfully updated.'));
         return back();
     }
 
     public function item_destroy(Material $item)
     {
         $item->delete();
-        material_toastr(__('Material successfully delete.'));
+        material_success(__('Material successfully delete.'));
         return back();
     }
 
     public function item_restore(Material $item)
     {
         $item->restore();
-        material_toastr(__('Material successfully restored.'));
+        material_success(__('Material successfully restored.'));
         if(request()->ajax())
             return ;
         return back();
@@ -145,7 +145,7 @@ class Controller extends BaseController
         ])->validate();
 
         $model = MaterialTag::create(collect($request->all())->only(['name', 'folder_id'])->toArray());
-        material_toastr(__('Tag successfully created.'));
+        material_success(__('Tag successfully created.'));
         if($request->ajax())
             return response()->json($model);
         return back();
@@ -165,14 +165,14 @@ class Controller extends BaseController
         ])->validate();
 
         $tag->update(collect($request->all())->only(['name', 'folder_id'])->toArray());
-        material_toastr(__('Material tag successfully updated.'));
+        material_success(__('Material tag successfully updated.'));
         return back();
     }
 
     public function tag_destroy(MaterialTag $tag)
     {
         $tag->forceDelete();
-        material_toastr($tag->name . ' ' . __('Tag successfully deleted.'));
+        material_success($tag->name . ' ' . __('Tag successfully deleted.'));
         return back();
     }
 
@@ -183,7 +183,7 @@ class Controller extends BaseController
         ])->validate();
 
         $model = MaterialTagFolder::create(collect($request->all())->only(['name'])->toArray());
-        material_toastr(__('Folder successfully created.'));
+        material_success(__('Folder successfully created.'));
         if($request->ajax())
             return response()->json($model);
         return back();
@@ -196,7 +196,7 @@ class Controller extends BaseController
         ])->validate();
 
         $folder->update(collect($request->all())->only(['name'])->toArray());
-        material_toastr(__('Folder successfully updated.'));
+        material_success(__('Folder successfully updated.'));
         if($request->ajax())
             return response()->json($folder);
         return back();
@@ -221,7 +221,7 @@ class Controller extends BaseController
             });
         }
         $folder->forceDelete();
-        material_toastr($folder->name . ' ' . __('Folder successfully deleted.'));
+        material_success($folder->name . ' ' . __('Folder successfully deleted.'));
         return back();
     }
 }

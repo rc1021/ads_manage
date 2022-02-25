@@ -80,7 +80,7 @@ if (!function_exists('material_toastr')) {
     }
 }
 
-if (!function_exists('material_toastr')) {
+if (!function_exists('material_success')) {
 
     /**
      * Flash a success message bag to session.
@@ -88,7 +88,7 @@ if (!function_exists('material_toastr')) {
      * @param string $title
      * @param string $message
      */
-    function material_toastr($title, $message = '')
+    function material_success($title, $message = '')
     {
         material_info($title, $message, 'success');
     }

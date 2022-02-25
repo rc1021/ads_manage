@@ -2,12 +2,10 @@
 
 namespace TargetConvert\Material\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MaterialTagMaterial extends Model
 {
-    use HasFactory;
 
     public function __construct(array $attributes = [])
     {

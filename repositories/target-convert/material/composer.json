@@ -10,16 +10,17 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^7.3|^8.0",
-        "genealabs/laravel-model-caching": "^0.11.0",
+        "genealabs/laravel-model-caching": "^0.10.2",
         "godruoyi/php-snowflake": "^2.0",
         "intervention/image": "^2.7",
         "james-heinrich/getid3": "^1.9",
         "mpratt/embera": "^2.0",
-        "pbmedia/laravel-ffmpeg": "^7.8",
+        "pbmedia/laravel-ffmpeg": "^7.5.12",
         "podlove/webvtt-parser": "^1.1",
         "predis/predis": "^1.1",
         "laravel/framework": ">=5.5",
-        "doctrine/dbal": "2.*|3.*"
+        "doctrine/dbal": "2.*|3.*",
+        "laravel/sanctum": "^2.11"
     },
     "require-dev": {
         "laravel/laravel": ">=5.5",
